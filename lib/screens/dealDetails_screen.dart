@@ -30,7 +30,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
               loadingHandler(context);
             },
             child: Container(
-              margin: EdgeInsets.only(right: 350),
+              margin: EdgeInsets.only(right: 330),
               child: Image.asset(
                 'assets/images/arrowL.png',
                 width: 45.0,
@@ -71,19 +71,38 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                       ),
                       Row(
                         children: [
-                          GestureDetector(
-                            onTap: () {
+                          SizedBox(
+                            width: 10,
+                          ),
+                          ElevatedButton(
+                            onPressed: () {
                               // Handle tap on the text
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                    builder: (context) =>
-                                        PartnerProfileScreen()),
+                                  builder: (context) => PartnerProfileScreen(),
+                                ),
                               );
                             },
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.white),
+                              elevation: MaterialStateProperty.all<double>(
+                                  1), // Remove elevation
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(
+                                      5), // Set border radius
+                                  side: BorderSide(
+                                      color: MyColors
+                                          .btnBorderColor), // Set border color
+                                ),
+                              ),
+                            ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                vertical: 5,
+                                vertical: 10,
                                 horizontal: 20,
                               ),
                               child: Text(
@@ -213,30 +232,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(
-                                height:
-                                    20), // Add spacing between the previous content and the description
-                            Text(
-                              'Description',
-                              style: TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            SizedBox(
-                                height:
-                                    10), // Add spacing between the label and the description text
-                            Text(
-                              'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed nec leo eget odio ultrices lacinia.',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                              ),
-                            ),
-                            SizedBox(
-                                height:
-                                    20), // Add spacing between the description and the button
+                            SizedBox(height: 20),
                             Align(
                               alignment: Alignment.centerRight,
                               child: TextButton(

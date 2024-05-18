@@ -225,7 +225,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      horizontal: 65), // Add horizontal padding
+                                      horizontal: 60), // Add horizontal padding
                                   child: Row(
                                     children: [
                                       // Gender radio buttons

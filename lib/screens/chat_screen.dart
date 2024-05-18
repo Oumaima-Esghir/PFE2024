@@ -12,6 +12,7 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -24,7 +25,7 @@ class _ChatScreenState extends State<ChatScreen> {
               loadingHandler(context);
             },
             child: Container(
-              margin: EdgeInsets.only(right: 350),
+              margin: EdgeInsets.only(right: 330),
               child: Image.asset(
                 'assets/images/arrowL.png',
                 width: 45.0,

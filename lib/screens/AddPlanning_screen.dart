@@ -31,7 +31,7 @@ class _AddPlanningScreenState extends State<AddPlanningScreen> {
               loadingHandler(context);
             },
             child: Container(
-              margin: EdgeInsets.only(right: 350),
+              margin: EdgeInsets.only(right: 330),
               child: Image.asset(
                 'assets/images/arrowL.png',
                 width: 45.0,

@@ -74,7 +74,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(
-                            90), // Adjust the radius as needed
+                            90), // Adjust the radius as needed*/
 
                         child: Image(
                           image: AssetImage('assets/images/user_pic.png'),

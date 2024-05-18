@@ -26,7 +26,7 @@ class _PromoCardCardState extends State<PromoCard> {
           ),
           child: Container(
             color: Colors.white,
-            height: 200,
+            height: 220,
             padding: EdgeInsets.all(20),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -36,11 +36,11 @@ class _PromoCardCardState extends State<PromoCard> {
                   child: Image.asset(
                     'assets/images/vitrine1.png',
                     width: 160,
-                    height: 160,
+                    height: 180,
                     fit: BoxFit.cover,
                   ),
                 ),
-                SizedBox(width: 15),
+                SizedBox(width: 10),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -52,7 +52,7 @@ class _PromoCardCardState extends State<PromoCard> {
                             padding: EdgeInsets.all(4),
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(8),
                               border: Border.all(color: Colors.black),
                             ),
                             child: Row(
@@ -87,7 +87,7 @@ class _PromoCardCardState extends State<PromoCard> {
                           ),
                         ],
                       ),
-                      SizedBox(height: 20),
+                      SizedBox(height: 35),
                       Center(
                         child: Text(
                           'The Secret Coffee Shop',
@@ -97,7 +97,7 @@ class _PromoCardCardState extends State<PromoCard> {
                           ),
                         ),
                       ),
-                      SizedBox(height: 35),
+                      SizedBox(height: 40),
                       ElevatedButton(
                         onPressed: () {
                           Navigator.push(
@@ -113,7 +113,7 @@ class _PromoCardCardState extends State<PromoCard> {
                           ),
                           shape: MaterialStateProperty.all<OutlinedBorder>(
                             RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(8),
                               side: BorderSide(
                                 color: MyColors.btnBorderColor,
                                 width: 2,
@@ -121,7 +121,7 @@ class _PromoCardCardState extends State<PromoCard> {
                             ),
                           ),
                           fixedSize: MaterialStateProperty.all<Size>(
-                            Size(180, 45),
+                            Size(200, 45),
                           ),
                         ),
                         child: Row(

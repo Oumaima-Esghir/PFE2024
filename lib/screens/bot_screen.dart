@@ -25,7 +25,7 @@ class _BotScreenState extends State<BotScreen> {
               loadingHandler(context);
             },
             child: Container(
-              margin: EdgeInsets.only(right: 350),
+              margin: EdgeInsets.only(right: 330),
               child: Image.asset(
                 'assets/images/arrowL.png',
                 width: 45.0,
