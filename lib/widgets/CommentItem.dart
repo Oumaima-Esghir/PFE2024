@@ -1,12 +1,12 @@
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-class Comment extends StatefulWidget {
+class CommentItem extends StatefulWidget {
   @override
-  _CommentState createState() => _CommentState();
+  _CommentItemState createState() => _CommentItemState();
 }
 
-class _CommentState extends State<Comment> {
+class _CommentItemState extends State<CommentItem> {
   @override
   Widget build(BuildContext context) {
     return Card(

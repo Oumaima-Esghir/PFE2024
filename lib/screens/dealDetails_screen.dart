@@ -2,7 +2,7 @@ import 'package:dealdiscover/screens/AddPlanning_screen.dart';
 import 'package:dealdiscover/screens/bottomnavbar.dart';
 import 'package:dealdiscover/screens/partnerProfile_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
-import 'package:dealdiscover/widgets/Comment.dart' as CommentWidget;
+import 'package:dealdiscover/widgets/CommentItem.dart' as CommentItemWidget;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -290,7 +290,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                               },
                               itemBuilder: (context, index) {
                                 // Replace 'This is a sample comment.' with actual comment data
-                                return CommentWidget.Comment();
+                                return CommentItemWidget.CommentItem();
                               },
                             ),
                           ],
