@@ -1,15 +1,12 @@
+import 'package:dealdiscover/model/place.dart';
 import 'package:dealdiscover/screens/dealDetails_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/material.dart';
 
-class DealCard extends StatefulWidget {
-  @override
-  _DealCardState createState() => _DealCardState();
-}
+class DealCard extends StatelessWidget {
+  final Place place;
 
-class _DealCardState extends State<DealCard> {
-  final String rating = '4.5';
-  bool isFavorited = false;
+ const DealCard({Key? key, required this.place}) : super(key: key); 
 
   @override
   Widget build(BuildContext context) {
@@ -46,8 +43,10 @@ class _DealCardState extends State<DealCard> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: Image.asset(
-                          'assets/images/vitrine1.png',
+                        child: Image.network(
+                          place.placeImage.isNotEmpty
+                              ? place.placeImage[0] // Use the first image in the list
+                         : 'assets/images/placeholder.png',
                           width: 220,
                           height: 180,
                           fit: BoxFit.cover,
@@ -60,14 +59,10 @@ class _DealCardState extends State<DealCard> {
                       child: GestureDetector(
                         // Wrap the favorite image with GestureDetector
                         onTap: () {
-                          setState(() {
-                            isFavorited = !isFavorited; // Toggle the state
-                          });
+                          // Handle favorite toggle
                         },
                         child: Image.asset(
-                          isFavorited
-                              ? 'assets/images/fav1.png' // Change the image path based on the state
-                              : 'assets/images/fav0.png',
+                          'assets/images/fav0.png',
                           width: 35,
                           height: 35,
                         ),
@@ -87,19 +82,14 @@ class _DealCardState extends State<DealCard> {
                         ),
                         child: Row(
                           children: [
-                            SizedBox(
-                              width: 5,
-                            ),
+                            SizedBox(width: 5),
                             Text(
-                              rating, // Rating text
+                              place.rate?.toString() ?? '', // Handle null rate
                               style: TextStyle(color: Colors.black),
                             ),
-                            SizedBox(
-                              width: 5,
-                            ),
+                            SizedBox(width: 5),
                             Icon(
                               Icons.star,
-                              // Star icon
                               color: Colors.yellow,
                             ),
                           ],
@@ -111,7 +101,7 @@ class _DealCardState extends State<DealCard> {
                 SizedBox(height: 10),
                 Center(
                   child: Text(
-                    'The Secret Coffee Shop',
+                    place.name, // Display place name
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -125,7 +115,9 @@ class _DealCardState extends State<DealCard> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => DealDetailsScreen()),
+                          builder: (context) =>
+                              DealDetailsScreen(placeId: place.id,place: place),
+                        ),
                       );
                     },
                     style: ButtonStyle(

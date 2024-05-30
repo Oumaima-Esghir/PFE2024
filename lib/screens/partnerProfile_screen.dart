@@ -1,3 +1,4 @@
+import 'package:dealdiscover/model/place.dart';
 import 'package:dealdiscover/screens/dealDetails_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,6 +12,8 @@ class PartnerProfileScreen extends StatefulWidget {
 }
 
 class _PartnerProfileScreenState extends State<PartnerProfileScreen> {
+  
+   late Place place;
   bool isLoading1 = false;
 
   @override
@@ -210,7 +213,7 @@ class _PartnerProfileScreenState extends State<PartnerProfileScreen> {
         Navigator.pushReplacement(
           context,
           CupertinoPageRoute(
-            builder: (_) => DealDetailsScreen(),
+            builder: (_) => DealDetailsScreen(placeId: place.id,place: place),
           ),
         );
       });

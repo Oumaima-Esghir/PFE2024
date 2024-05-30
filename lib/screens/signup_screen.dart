@@ -1,9 +1,13 @@
+import 'package:dealdiscover/client/client_service.dart';
+import 'package:dealdiscover/model/user.dart';
 import 'package:dealdiscover/screens/bottomnavbar.dart';
 import 'package:dealdiscover/screens/signin_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({Key? key}) : super(key: key);
@@ -14,11 +18,87 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   bool _obscureText = true;
-  String? genderValue;
-  int age = 10;
+  //String? genderValue;
+  //int age = 10;
   String _email = '';
   String? _emailError;
+  final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
+  bool _isLoading = false;
+  String? _errorMessage;
+
+  Future<void> _register() async {
+    if (_email.isEmpty || !_isValidEmail(_email)) {
+      setState(() {
+        _emailError = 'Please enter a valid email address';
+      });
+      return;
+    }
+
+    String _password = _passwordController.text;
+    if (_password.isEmpty || _password.length < 8) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Password must be at least 8 characters long')),
+      );
+      return;
+    }
+
+    if (_password != _confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Passwords do not match')),
+      );
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+    });
+
+    User user = User(
+        user_id: null,
+        name: "nchlh tekhdem",
+        email: _email,
+        password: _password,
+        role: "normal",
+        username: _usernameController.text);
+
+    ClientService clientService = ClientService();
+    try {
+      http.Response response = await clientService.register(user);
+      if (response.statusCode == 200) {
+        // Assuming response body contains the userId
+        String userId =
+            response.body; // Adjust this as per your actual response structure
+
+        await storeUserInfo(userId, _usernameController.text);
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => BottomNavBar()),
+        );
+      } else {
+        setState(() {
+          _errorMessage = 'Registration failed: ${response.body}';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'An error occurred: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> storeUserInfo(String userId, String userName) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    await prefs.setString('userId', userId);
+    await prefs.setString('userName', userName);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -87,13 +167,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
-                            child: Image.asset(
-                              'assets/images/addP.png',
-                              width: 100, // Adjust the width as needed
-                              height: 100, // Adjust the height as needed
-                            ),
-                          ),
                           SizedBox(height: 10),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,6 +180,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                               SizedBox(height: 10),
                               TextField(
+                                controller: _usernameController,
                                 decoration: InputDecoration(
                                   hintText: "Enter your user name",
                                   border: OutlineInputBorder(),
@@ -129,7 +203,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   errorText: _emailError,
                                 ),
                                 onChanged: (value) {
-                                  // Validate email on every change
                                   setState(() {
                                     _email = value;
                                     if (_isValidEmail(value)) {
@@ -176,7 +249,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                               ),
                               SizedBox(height: 20),
-                              // Password label, input text, and visibility toggle button
+                              // Confirm password label, input text, and visibility toggle button
                               Text(
                                 "Confirm Password",
                                 style: TextStyle(
@@ -186,7 +259,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                               SizedBox(height: 10),
                               TextField(
-                                controller: _passwordController,
+                                controller: _confirmPasswordController,
                                 obscureText: _obscureText,
                                 decoration: InputDecoration(
                                   hintText: "Confirm your password",
@@ -206,6 +279,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                               ),
                               SizedBox(height: 20),
+                              /*
                               // Gender label
                               Text(
                                 "Gender",
@@ -343,6 +417,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   ],
                                 ),
                               ),
+                              */
                               SizedBox(height: 20),
                               // Sign Up button
                               Center(
@@ -351,62 +426,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   width:
                                       double.infinity, // Make button full width
                                   child: TextButton(
-                                    onPressed: () {
-                                      // Add your  logic here
-                                      // Validate email
-                                      if (_email.isEmpty) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                                'Please enter your email address'),
-                                          ),
-                                        );
-                                        return;
-                                      } else if (!_isValidEmail(_email)) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                                'Please enter a valid email address'),
-                                          ),
-                                        );
-                                        return;
-                                      }
-
-                                      // Validate password
-                                      String password =
-                                          _passwordController.text;
-                                      if (password.isEmpty) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                                'Please enter your password'),
-                                          ),
-                                        );
-                                        return;
-                                      }
-
-// Check if the password meets the minimum length requirement
-                                      if (password.length < 8) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                            content: Text(
-                                                'Password must be at least 8 characters long'),
-                                          ),
-                                        );
-                                        return;
-                                      }
-
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                BottomNavBar()),
-                                      );
-                                    },
+                                    onPressed: _isLoading ? null : _register,
                                     style: ButtonStyle(
                                       backgroundColor:
                                           MaterialStateProperty.all<Color>(
@@ -426,16 +446,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                         ),
                                       ),
                                     ),
-                                    child: Text(
-                                      "Sign Up",
-                                      style: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
+                                    child: _isLoading
+                                        ? CircularProgressIndicator(
+                                            color: Colors.black)
+                                        : Text(
+                                            "Sign Up",
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
                                   ),
                                 ),
                               ),
+                              SizedBox(height: 10),
+                              if (_errorMessage != null)
+                                Text(
+                                  _errorMessage!,
+                                  style: TextStyle(color: Colors.red),
+                                ),
                               SizedBox(height: 20),
                               Padding(
                                 padding: EdgeInsets.symmetric(

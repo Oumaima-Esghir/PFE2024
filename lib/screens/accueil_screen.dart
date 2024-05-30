@@ -1,6 +1,9 @@
+import 'package:dealdiscover/client/client_service.dart';
+import 'package:dealdiscover/model/place.dart';
 import 'package:dealdiscover/screens/signin_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:dealdiscover/widgets/DealCard.dart' as DealCardWidget;
+import 'package:dealdiscover/widgets/DealCard.dart';
 import 'package:dealdiscover/widgets/PromoCard.dart' as PromoCardWidget;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +16,14 @@ class AccueilScreen extends StatefulWidget {
 }
 
 class _AccueilScreenState extends State<AccueilScreen> {
+  late Future<List<Place>>? futurePlaces;
+  ClientService clientService = ClientService();
+  @override
+  void initState() {
+    super.initState();
+    futurePlaces = clientService.getPlaces();
+  }
+
   bool isLoading = false;
   @override
   Widget build(BuildContext context) {
@@ -123,16 +134,37 @@ class _AccueilScreenState extends State<AccueilScreen> {
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: [
-                              DealCardWidget
-                                  .DealCard(), // Display the DealCard widget
-                              SizedBox(width: 10), // Add spacing between cards
-                              DealCardWidget
-                                  .DealCard(), // You can add more DealCard widgets here
-                              SizedBox(width: 10), // Add spacing between cards
-                              DealCardWidget.DealCard(),
-                              SizedBox(width: 10), // Add spacing between cards
-                              DealCardWidget
-                                  .DealCard(), // You can add more DealCard widgets here
+                              FutureBuilder<List<Place>>(
+                                future: futurePlaces,
+                                builder: (context, snapshot) {
+                                  if (snapshot.connectionState ==
+                                      ConnectionState.waiting) {
+                                    return Center(
+                                        child: CircularProgressIndicator());
+                                  } else if (snapshot.hasError) {
+                                    return Center(
+                                        child:
+                                            Text('Error: ${snapshot.error}'));
+                                  } else if (snapshot.hasData) {
+                                    List<Place> places = snapshot.data!;
+                                    return Row(
+                                      children: places.map((place) {
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              horizontal: 5.0),
+                                          child: DealCard(
+                                            place:
+                                                place, // Pass the place to the DealCard widget
+                                          ),
+                                        );
+                                      }).toList(),
+                                    );
+                                  } else {
+                                    return Center(
+                                        child: Text('No places found'));
+                                  }
+                                },
+                              ),
                             ],
                           ),
                         ),

@@ -19,12 +19,15 @@ class SplashScreen extends StatelessWidget {
         AnimatedSplashScreen(
           splash: Image.asset(
             'assets/images/logo.png',
-            width: MediaQuery.of(context).size.width * 2, // Adjust the width as needed
-            height: MediaQuery.of(context).size.height * 2, // Adjust the height as needed
+            width: MediaQuery.of(context).size.width *
+                2, // Adjust the width as needed
+            height: MediaQuery.of(context).size.height *
+                2, // Adjust the height as needed
             fit: BoxFit.contain,
           ),
           duration: 3000,
-          splashTransition: SplashTransition.fadeTransition,
+          splashTransition:
+              SplashTransition.scaleTransition, // Change the animation here
           backgroundColor: Colors.transparent,
           nextScreen: OnboardingScreen(),
         ),
