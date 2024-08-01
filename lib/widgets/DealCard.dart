@@ -1,12 +1,99 @@
-import 'package:dealdiscover/model/place.dart';
+import 'package:dealdiscover/model/pub.dart';
 import 'package:dealdiscover/screens/dealDetails_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:dealdiscover/client/client_service.dart';
 
-class DealCard extends StatelessWidget {
-  final Place place;
+class DealCard extends StatefulWidget {
+  final Pub pub;
 
- const DealCard({Key? key, required this.place}) : super(key: key); 
+  const DealCard({super.key, required this.pub});
+
+  @override
+  _DealCardState createState() => _DealCardState();
+}
+
+class _DealCardState extends State<DealCard> {
+  bool isFavorited = false;
+  bool isLoading = false;
+
+  ClientService clientService = ClientService();
+
+  @override
+  void initState() {
+    super.initState();
+    //_loadFavoriteStatus();
+  }
+
+  /*Future<void> _loadFavoriteStatus() async {
+    try {
+      final favouritePlaces = await clientService.getFavorites();
+      setState(() {
+        isFavorited = favouritePlaces.contains(widget.place.id);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading favorite places: $e')),
+      );
+    }
+  }*/
+
+  /*void _toggleFavorite() async {
+    setState(() {
+      isFavorited = !isFavorited; // Optimistically update the UI
+    });
+    if (isFavorited) {
+      try {
+        final response = await clientService.addFavourite(widget.place.id);
+        if (response.statusCode != 200) {
+          setState(() {
+            isFavorited = !isFavorited;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content:
+                    Text('Failed to update favorite status: ${response.body}')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Favorite status updated successfully')),
+          );
+        }
+      } catch (e) {
+        setState(() {
+          isFavorited = !isFavorited;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating favorite status: $e')),
+        );
+      }
+    } else {
+      try {
+        final response = await clientService.removeFavorite(widget.place.id);
+        if (response.statusCode != 200) {
+          setState(() {
+            isFavorited = !isFavorited;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content:
+                    Text('Failed to update favorite status: ${response.body}')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Favorite removed')),
+          );
+        }
+      } catch (e) {
+        setState(() {
+          isFavorited = !isFavorited;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating favorite status: $e')),
+        );
+      }
+    }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -44,9 +131,10 @@ class DealCard extends StatelessWidget {
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
                         child: Image.network(
-                          place.placeImage.isNotEmpty
-                              ? place.placeImage[0] // Use the first image in the list
-                         : 'assets/images/placeholder.png',
+                          widget.pub.pubImage == null ||
+                                  widget.pub.pubImage!.isNotEmpty
+                              ? widget.pub.pubImage!
+                              : 'assets/images/vitrine1.png',
                           width: 220,
                           height: 180,
                           fit: BoxFit.cover,
@@ -57,12 +145,11 @@ class DealCard extends StatelessWidget {
                       top: 8,
                       right: 8,
                       child: GestureDetector(
-                        // Wrap the favorite image with GestureDetector
-                        onTap: () {
-                          // Handle favorite toggle
-                        },
+                        // onTap: _toggleFavorite, // Handle favorite toggle
                         child: Image.asset(
-                          'assets/images/fav0.png',
+                          isFavorited
+                              ? 'assets/images/fav1.png' // Full heart image
+                              : 'assets/images/fav0.png', // Empty heart image
                           width: 35,
                           height: 35,
                         ),
@@ -84,7 +171,7 @@ class DealCard extends StatelessWidget {
                           children: [
                             SizedBox(width: 5),
                             Text(
-                              place.rate?.toString() ?? '', // Handle null rate
+                              widget.pub.rating?.toString() ?? '',
                               style: TextStyle(color: Colors.black),
                             ),
                             SizedBox(width: 5),
@@ -101,7 +188,7 @@ class DealCard extends StatelessWidget {
                 SizedBox(height: 10),
                 Center(
                   child: Text(
-                    place.name, // Display place name
+                    widget.pub.title ?? 'No Title',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 16,
@@ -115,8 +202,8 @@ class DealCard extends StatelessWidget {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) =>
-                              DealDetailsScreen(placeId: place.id,place: place),
+                          builder: (context) => DealDetailsScreen(
+                              pubId: widget.pub.id, pub: widget.pub),
                         ),
                       );
                     },

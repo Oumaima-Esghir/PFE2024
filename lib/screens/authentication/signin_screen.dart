@@ -1,6 +1,8 @@
-import 'package:dealdiscover/screens/bottomnavbar.dart';
+import 'package:dealdiscover/client/client.dart';
+import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
 import 'package:dealdiscover/screens/onboarding%20_screen%20.dart';
-import 'package:dealdiscover/screens/signup_screen.dart';
+import 'package:dealdiscover/screens/UserScreens/signup_user_screen.dart';
+import 'package:dealdiscover/screens/menus/hidden_drawer.dart'; // Import HiddenDrawer screen
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dealdiscover/utils/colors.dart';
@@ -23,6 +25,7 @@ class _SigninScreenState extends State<SigninScreen> {
   String _email = '';
   String? _emailError;
   String? _passwordError;
+  String _selectedUserType = 'user'; // default to 'user'
   final TextEditingController _passwordController = TextEditingController();
 
   @override
@@ -122,7 +125,30 @@ class _SigninScreenState extends State<SigninScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 10),
+                          SizedBox(
+                            height: 10,
+                          ),
+                          DropdownButton<String>(
+                            value: _selectedUserType,
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                _selectedUserType = newValue!;
+                              });
+                            },
+                            items: <String>['user', 'partner']
+                                .map<DropdownMenuItem<String>>((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(
+                                  value == 'user' ? 'User' : 'Partner',
+                                  style: TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold),
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                          SizedBox(height: 20),
                           Text(
                             "Email",
                             style: TextStyle(
@@ -154,6 +180,9 @@ class _SigninScreenState extends State<SigninScreen> {
                             _emailError ?? '',
                             style: TextStyle(color: Colors.red),
                           ),
+                          // User type dropdown
+                          SizedBox(height: 20),
+
                           // SizedBox(height: 5),
                           // Password label, input text, and visibility toggle button
                           Text(
@@ -216,7 +245,7 @@ class _SigninScreenState extends State<SigninScreen> {
                               height: 50, // Adjust height as needed
                               width: double.infinity, // Make button full width
                               child: TextButton(
-                                onPressed: _login,
+                                onPressed: _signin,
                                 style: ButtonStyle(
                                   backgroundColor:
                                       MaterialStateProperty.all<Color>(
@@ -286,9 +315,6 @@ class _SigninScreenState extends State<SigninScreen> {
                               ),
                             ),
                           ),
-                          SizedBox(
-                            height: 10,
-                          ),
                         ],
                       ),
                     ),
@@ -302,19 +328,127 @@ class _SigninScreenState extends State<SigninScreen> {
     );
   }
 
+  bool _isValidEmail(String email) {
+    // Regular expression for email validation
+    final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+    return emailRegex.hasMatch(email);
+  }
+
+  void _signin() async {
+    String email = _email;
+    String password = _passwordController.text;
+
+    if (email.isEmpty) {
+      setState(() {
+        _emailError = 'Please enter your email address';
+      });
+      return;
+    } else if (!_isValidEmail(email)) {
+      setState(() {
+        _emailError = 'Please enter a valid email address';
+      });
+      return;
+    }
+
+    if (password.isEmpty) {
+      setState(() {
+        _passwordError = 'Please enter your password';
+      });
+      return;
+    }
+
+    if (password.length < 8) {
+      setState(() {
+        _passwordError = 'Password must be at least 8 characters long';
+      });
+      return;
+    }
+
+    try {
+      ClientService clientService = ClientService();
+      http.Response response;
+
+      if (_selectedUserType == 'user') {
+        response = await clientService.signinuser(email, password);
+      } else {
+        response = await clientService.partnersignin(email, password);
+      }
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final jsonResponse = jsonDecode(response.body) as Map<String, dynamic>;
+        final user = jsonResponse['user'] as Map<String, dynamic>;
+
+        if (user.containsKey('token') &&
+            user['token'] != null &&
+            user.containsKey('roles') &&
+            user['roles'] != null) {
+          String token = user['token'];
+          List<dynamic> roles = user['roles'];
+          String userType = roles.contains('partenaire') ? 'partner' : 'user';
+
+          print("Token: $token");
+          print("User Type: $userType");
+
+          Client client = Client();
+          client.setToken(token);
+
+          // Delay SnackBar display
+          Future.delayed(Duration(milliseconds: 100), () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Login successful'),
+              ),
+            );
+          });
+
+          if (userType == 'partner') {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HiddenDrawer()),
+            );
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => BottomNavBar()),
+            );
+          }
+        } else {
+          throw Exception("Missing or null token/roles in response");
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Login failed: ${response.body}'),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('An error occurred: $e'),
+        ),
+      );
+    }
+  }
+
   void loadingHandler1(BuildContext context) {
     setState(() {
       isLoading1 = true;
     });
-    Future.delayed(const Duration(seconds: 2)).then((value) {
-      setState(() {
-        isLoading1 = false;
-        Navigator.pushReplacement(
-          context,
-          CupertinoPageRoute(
-            builder: (_) => const OnboardingScreen(),
-          ),
-        );
+
+    Future.delayed(Duration(seconds: 1), () {
+      Navigator.push(
+        context,
+        CupertinoPageRoute(
+          builder: (_) => const OnboardingScreen(),
+        ),
+      ).then((_) {
+        setState(() {
+          isLoading1 = false;
+        });
       });
     });
   }
@@ -323,99 +457,18 @@ class _SigninScreenState extends State<SigninScreen> {
     setState(() {
       isLoading2 = true;
     });
-    Future.delayed(const Duration(seconds: 2)).then((value) {
-      setState(() {
-        isLoading2 = false;
-        Navigator.pushReplacement(
-          context,
-          CupertinoPageRoute(
-            builder: (_) => const BottomNavBar(),
-          ),
-        );
+
+    Future.delayed(Duration(seconds: 1), () {
+      Navigator.push(
+        context,
+        CupertinoPageRoute(
+          builder: (_) => const BottomNavBar(),
+        ),
+      ).then((_) {
+        setState(() {
+          isLoading2 = false;
+        });
       });
     });
-  }
-
-  bool _isValidEmail(String email) {
-    // Regular expression for email validation
-    final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-    return emailRegex.hasMatch(email);
-  }
-
-  void _login() async {
-    String email = _email;
-    String password = _passwordController.text;
-
-    // Validate email
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please enter your email address'),
-        ),
-      );
-      return;
-    } else if (!_isValidEmail(email)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please enter a valid email address'),
-        ),
-      );
-      return;
-    }
-
-    // Validate password
-    if (password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Please enter your password'),
-        ),
-      );
-      return;
-    }
-
-    // Check if the password meets the minimum length requirement
-    if (password.length < 8) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Password must be at least 8 characters long'),
-        ),
-      );
-      return;
-    }
-
-    // Attempt to login
-    try {
-      ClientService clientService = ClientService();
-      http.Response response = await clientService.login(email, password);
-
-      if (response.statusCode == 200) {
-        // Successful login
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Login successful'),
-          ),
-        );
-
-        // Navigate to BottomNavBar
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => BottomNavBar()),
-        );
-      } else {
-        // Failed login
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Login failed: ${response.body}'),
-          ),
-        );
-      }
-    } catch (e) {
-      // Handle error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('An error occurred: $e'),
-        ),
-      );
-    }
   }
 }

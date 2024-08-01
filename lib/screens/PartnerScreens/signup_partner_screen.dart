@@ -1,7 +1,10 @@
+import 'dart:convert';
+
 import 'package:dealdiscover/client/client_service.dart';
-import 'package:dealdiscover/model/user.dart';
-import 'package:dealdiscover/screens/bottomnavbar.dart';
-import 'package:dealdiscover/screens/signin_screen.dart';
+import 'package:dealdiscover/model/partenaire.dart';
+import 'package:dealdiscover/screens/PartnerScreens/deals_management_screen.dart';
+import 'package:dealdiscover/screens/authentication/signin_screen.dart';
+import 'package:dealdiscover/screens/menus/hidden_drawer.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dealdiscover/utils/colors.dart';
@@ -9,27 +12,27 @@ import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({Key? key}) : super(key: key);
+class SignUpPartnerScreen extends StatefulWidget {
+  const SignUpPartnerScreen({Key? key}) : super(key: key);
 
   @override
-  _SignUpScreenState createState() => _SignUpScreenState();
+  _SignUpPartnerScreenState createState() => _SignUpPartnerScreenState();
 }
 
-class _SignUpScreenState extends State<SignUpScreen> {
+class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
   bool _obscureText = true;
-  //String? genderValue;
-  //int age = 10;
+
   String _email = '';
   String? _emailError;
-  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _adressController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   bool _isLoading = false;
   String? _errorMessage;
 
-  Future<void> _register() async {
+  Future<void> _partnersignup() async {
     if (_email.isEmpty || !_isValidEmail(_email)) {
       setState(() {
         _emailError = 'Please enter a valid email address';
@@ -56,28 +59,57 @@ class _SignUpScreenState extends State<SignUpScreen> {
       _isLoading = true;
     });
 
-    User user = User(
-        user_id: null,
-        name: "nchlh tekhdem",
-        email: _email,
-        password: _password,
-        role: "normal",
-        username: _usernameController.text);
+    Partenaire partenaire = Partenaire(
+      partenaire_id: null,
+      name: _nameController.text,
+      email: _email,
+      password: _password,
+      adress: _adressController.text,
+      image: '', // Provide a default empty string for the image
+      publications: [], // Provide a default empty list for publications
+    );
 
     ClientService clientService = ClientService();
     try {
-      http.Response response = await clientService.register(user);
-      if (response.statusCode == 200) {
-        // Assuming response body contains the userId
-        String userId =
-            response.body; // Adjust this as per your actual response structure
+      http.Response response = await clientService.partnersignup(partenaire);
 
-        await storeUserInfo(userId, _usernameController.text);
+      // Log the response status code and body for debugging
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}');
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => BottomNavBar()),
-        );
+      if (response.statusCode == 201) {
+        // Parse the JSON response
+        var responseData = jsonDecode(response.body);
+        String message =
+            responseData['message']; // Extract message from the response
+        if (message == "Partner successfully created!") {
+          String partenaireId = responseData['partenaire']
+              ['id']; // Extract user ID from the response
+          String token = responseData['partenaire']
+              ['token']; // Extract token from the response
+
+          await storeUserInfo(partenaireId, _nameController.text, token);
+
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HiddenDrawer()),
+          );
+        } else {
+          setState(() {
+            _errorMessage = 'Registration failed: ${response.body}';
+          });
+        }
+      } else if (response.statusCode == 500) {
+        var responseData = jsonDecode(response.body);
+        if (responseData['error'].contains('duplicate key error')) {
+          setState(() {
+            _errorMessage = 'The email address is already in use.';
+          });
+        } else {
+          setState(() {
+            _errorMessage = 'Registration failed: ${response.body}';
+          });
+        }
       } else {
         setState(() {
           _errorMessage = 'Registration failed: ${response.body}';
@@ -94,10 +126,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
     }
   }
 
-  Future<void> storeUserInfo(String userId, String userName) async {
+  Future<void> storeUserInfo(
+      String partenaireId, String name, String token) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('userId', userId);
-    await prefs.setString('userName', userName);
+    await prefs.setString('partenaireId', partenaireId);
+    await prefs.setString('name', name);
+    await prefs.setString('token', token); // Store the token as well
   }
 
   @override
@@ -105,7 +139,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text("Sign Up Screen"),
+        title: const Text("Partner Sign Up Screen"),
         backgroundColor: MyColors.PColor,
       ),
       resizeToAvoidBottomInset: false,
@@ -132,7 +166,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     children: [
                       SizedBox(height: 40),
                       Text(
-                        "Create Your Account",
+                        "Create Your Account As A Partner",
                         style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -172,7 +206,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                "User Name",
+                                "Partner Name",
                                 style: TextStyle(
                                   fontSize: 16,
                                   fontWeight: FontWeight.bold,
@@ -180,9 +214,25 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                               SizedBox(height: 10),
                               TextField(
-                                controller: _usernameController,
+                                controller: _nameController,
                                 decoration: InputDecoration(
-                                  hintText: "Enter your user name",
+                                  hintText: "Enter your partner name",
+                                  border: OutlineInputBorder(),
+                                ),
+                              ),
+                              SizedBox(height: 20),
+                              Text(
+                                "Adress",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              TextField(
+                                controller: _adressController,
+                                decoration: InputDecoration(
+                                  hintText: "Enter your adress",
                                   border: OutlineInputBorder(),
                                 ),
                               ),
@@ -279,146 +329,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                               ),
                               SizedBox(height: 20),
-                              /*
-                              // Gender label
-                              Text(
-                                "Gender",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              // Box with the same size as input text confirm password
-                              Container(
-                                height: 60, // Adjust height as needed
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Colors.black), // White border
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 60), // Add horizontal padding
-                                  child: Row(
-                                    children: [
-                                      // Gender radio buttons
-                                      Radio<String>(
-                                        value: "male",
-                                        groupValue: genderValue,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            genderValue = value;
-                                          });
-                                        },
-                                        activeColor: MyColors
-                                            .btnBorderColor, // Change the color of the selected radio button
-                                      ),
-                                      Text("Male"),
-                                      Radio<String>(
-                                        value: "female",
-                                        groupValue: genderValue,
-                                        onChanged: (value) {
-                                          setState(() {
-                                            genderValue = value;
-                                          });
-                                        },
-                                        activeColor: MyColors
-                                            .btnBorderColor, // Change the color of the selected radio button
-                                      ),
-                                      Text("Female"),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              // Age label
-                              Text(
-                                "Age",
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              SizedBox(height: 20),
-                              // Container with buttons and number display
-                              Container(
-                                height: 60, // Adjust height as needed
-                                decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: Colors.black), // White border
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment
-                                      .spaceEvenly, // Space buttons evenly
-                                  children: [
-                                    // Decrease button
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          if (age > 0) {
-                                            age--;
-                                          }
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(10),
-                                            bottomLeft: Radius.circular(10),
-                                          ),
-                                          color: MyColors.btnColor,
-                                          border: Border.all(
-                                            color: Colors
-                                                .black, // Set the border color here
-                                            width:
-                                                1, // Set the border width here
-                                          ),
-                                        ),
-                                        child: Icon(Icons.remove,
-                                            color: Colors.black),
-                                      ),
-                                    ),
-                                    // Number display
-                                    Text(
-                                      age.toString(),
-                                      style: TextStyle(fontSize: 20),
-                                    ),
-                                    // Increase button
-                                    GestureDetector(
-                                      onTap: () {
-                                        setState(() {
-                                          if (age < 100) {
-                                            age++;
-                                          }
-                                        });
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.all(8),
-                                        decoration: BoxDecoration(
-                                          borderRadius: BorderRadius.only(
-                                            topRight: Radius.circular(10),
-                                            bottomRight: Radius.circular(10),
-                                          ),
-                                          color: MyColors.btnColor,
-                                          border: Border.all(
-                                            color: Colors
-                                                .black, // Set the border color here
-                                            width:
-                                                1, // Set the border width here
-                                          ),
-                                        ),
-                                        child: Icon(Icons.add,
-                                            color: Colors.black),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              */
-                              SizedBox(height: 20),
+
                               // Sign Up button
                               Center(
                                 child: SizedBox(
@@ -426,7 +337,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   width:
                                       double.infinity, // Make button full width
                                   child: TextButton(
-                                    onPressed: _isLoading ? null : _register,
+                                    onPressed:
+                                        _isLoading ? null : _partnersignup,
                                     style: ButtonStyle(
                                       backgroundColor:
                                           MaterialStateProperty.all<Color>(

@@ -1,6 +1,6 @@
-import 'package:dealdiscover/screens/AddPlanning_screen.dart';
-import 'package:dealdiscover/screens/bottomnavbar.dart';
-import 'package:dealdiscover/screens/partnerProfile_screen.dart';
+import 'package:dealdiscover/screens/UserScreens/AddPlanning_screen.dart';
+import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
+import 'package:dealdiscover/screens/UserScreens/partner_profile_screen.dart';
 import 'package:dealdiscover/widgets/CommentItem.dart' as CommentItemWidget;
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';

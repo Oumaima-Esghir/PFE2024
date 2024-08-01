@@ -1,7 +1,11 @@
 abstract class EndPoints {
+  static const String getPubs = "/pubs/";
 
-  static const String register = "/register";
-  static const String login = "/login";
+  static const String signupuser = "/users/signup";
+  static const String signinuser = "/users/signin";
+
+  static const String partnersignup = "/partenaires/signup";
+  static const String partnersignin = "/partenaires/signin";
 
   static const String places = "/place/page";
 
@@ -10,6 +14,10 @@ abstract class EndPoints {
 
   static const String createrates = "/rates";
   static const String getrates = "/rates/page";
+
+  static const String addfavorites = "/place/favorites/add";
+  static const String removefavorites = "/place/favorites/remove";
+  static const String getfavorites = "/place/favorites/get";
 
   static String queryPath(String endPoint, List<String> args) {
     String result = endPoint;
@@ -20,7 +28,7 @@ abstract class EndPoints {
     return result;
   }
 
-  static String getRates(String placeId) {
+  /*static String getRates(String placeId) {
     return "$getrates?rated_id=$placeId";
-  }
+  }*/
 }

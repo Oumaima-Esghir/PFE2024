@@ -1,6 +1,8 @@
 import 'package:dealdiscover/client/client_service.dart';
-import 'package:dealdiscover/model/place.dart';
-import 'package:dealdiscover/screens/signin_screen.dart';
+import 'package:dealdiscover/model/pub.dart';
+import 'package:dealdiscover/screens/UserScreens/seeAllDeals.dart';
+import 'package:dealdiscover/screens/UserScreens/seeAllPromo.dart';
+import 'package:dealdiscover/screens/authentication/signin_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:dealdiscover/widgets/DealCard.dart' as DealCardWidget;
 import 'package:dealdiscover/widgets/DealCard.dart';
@@ -16,12 +18,13 @@ class AccueilScreen extends StatefulWidget {
 }
 
 class _AccueilScreenState extends State<AccueilScreen> {
-  late Future<List<Place>>? futurePlaces;
+  late Future<List<Pub>>? futurePubs;
   ClientService clientService = ClientService();
   @override
   void initState() {
     super.initState();
-    futurePlaces = clientService.getPlaces();
+    futurePubs = clientService.getPubs();
+    print("zz" + futurePubs.toString());
   }
 
   bool isLoading = false;
@@ -121,21 +124,46 @@ class _AccueilScreenState extends State<AccueilScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        SizedBox(height: 30),
-                        Text(
-                          'Best Deals',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
                         SizedBox(height: 10),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Best Deals',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SeeAllDealsScreen()),
+                                );
+                              },
+                              child: Text(
+                                'See All Deals', // Replace with your desired text
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.black, // Link color
+                                  decoration:
+                                      TextDecoration.underline, // Underline
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 20),
                         SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: [
-                              FutureBuilder<List<Place>>(
-                                future: futurePlaces,
+                              FutureBuilder<List<Pub>>(
+                                future: futurePubs,
                                 builder: (context, snapshot) {
                                   if (snapshot.connectionState ==
                                       ConnectionState.waiting) {
@@ -146,35 +174,70 @@ class _AccueilScreenState extends State<AccueilScreen> {
                                         child:
                                             Text('Error: ${snapshot.error}'));
                                   } else if (snapshot.hasData) {
-                                    List<Place> places = snapshot.data!;
-                                    return Row(
-                                      children: places.map((place) {
-                                        return Padding(
-                                          padding: const EdgeInsets.symmetric(
-                                              horizontal: 5.0),
-                                          child: DealCard(
-                                            place:
-                                                place, // Pass the place to the DealCard widget
-                                          ),
-                                        );
-                                      }).toList(),
+                                    List<Pub> pubs = snapshot.data!;
+                                    // Filter pubs based on state 'offre' and handle null values
+                                    List<Pub> filteredPubs = pubs
+                                        .where((pub) =>
+                                            pub.state != null &&
+                                            pub.state == 'offre')
+                                        .toList();
+                                    return SingleChildScrollView(
+                                      scrollDirection: Axis.horizontal,
+                                      child: Row(
+                                        children: filteredPubs.map((pub) {
+                                          print(pub);
+                                          return Padding(
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 5.0),
+                                            child: DealCard(
+                                              pub:
+                                                  pub, // Pass the pub to DealCard
+                                            ),
+                                          );
+                                        }).toList(),
+                                      ),
                                     );
                                   } else {
                                     return Center(
                                         child: Text('No places found'));
                                   }
                                 },
-                              ),
+                              )
                             ],
                           ),
                         ),
                         SizedBox(height: 20),
-                        Text(
-                          'Top Promotions',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Text(
+                              'Top Promotions',
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            GestureDetector(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SeeAllPromotionsScreen()),
+                                );
+                              },
+                              child: Text(
+                                'See All Promotions', // Replace with your desired text
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.normal,
+                                  color: Colors.black, // Link color
+                                  decoration:
+                                      TextDecoration.underline, // Underline
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                         SizedBox(height: 10),
                         SingleChildScrollView(

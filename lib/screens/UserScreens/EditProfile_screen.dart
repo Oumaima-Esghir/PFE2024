@@ -1,4 +1,4 @@
-import 'package:dealdiscover/screens/profile_screen.dart';
+import 'package:dealdiscover/screens/UserScreens/profile_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

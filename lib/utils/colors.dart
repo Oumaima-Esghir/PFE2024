@@ -12,5 +12,6 @@ class MyColors {
   static const Color border2 = Color(0xFFD7EEFF);
   static const Color transparentColor = Color(0x00FFFFFF);
   static const Color grey = Color(0xFFF5F5F5);
+  static const Color red = Color(0xFFFF5E94);
  
 }

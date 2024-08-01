@@ -4,10 +4,10 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'end_points.dart';
-
+ 
 class Client {
   final String serverUrl = "http://10.0.2.2:3000";
-  final String baseUrl = "http://10.0.2.2:3000/api";
+  final String baseUrl = "http://10.0.2.2:3000";
 
   Map<String, String> appHeaders = {
     'Content-Type': "application/json",

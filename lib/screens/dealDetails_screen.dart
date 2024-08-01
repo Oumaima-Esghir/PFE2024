@@ -1,10 +1,10 @@
 import 'package:dealdiscover/client/client_service.dart';
-import 'package:dealdiscover/model/place.dart';
+import 'package:dealdiscover/model/pub.dart';
 import 'package:dealdiscover/model/rates.dart';
 import 'package:dealdiscover/model/user.dart';
-import 'package:dealdiscover/screens/AddPlanning_screen.dart';
-import 'package:dealdiscover/screens/bottomnavbar.dart';
-import 'package:dealdiscover/screens/partnerProfile_screen.dart';
+import 'package:dealdiscover/screens/UserScreens/AddPlanning_screen.dart';
+import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
+import 'package:dealdiscover/screens/UserScreens/partner_profile_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:dealdiscover/widgets/CommentItem.dart' as CommentItemWidget;
 import 'package:flutter/cupertino.dart';
@@ -12,10 +12,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DealDetailsScreen extends StatefulWidget {
-  final String placeId;
-  final Place place;
+  final String pubId;
+  final Pub pub;
 
-  DealDetailsScreen({Key? key, required this.placeId, required this.place})
+  DealDetailsScreen({Key? key, required this.pubId, required this.pub})
       : super(key: key);
 
   @override
@@ -27,24 +27,40 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
   bool isFavorited = false;
   int rating = 0;
   int totalRatings = 0;
-
+  bool hasUserRated = false; // Track if user has rated in this session
+  late ClientService clientService;
 // Initialisez votre service de taux
-  ClientService clientService = ClientService();
 
   @override
   void initState() {
     super.initState();
-    fetchTotalRatings();
+    // fetchTotalRatings();
+    // checkIfUserRated();
+    //Get Favorite places then check if current postId exists in favourite
+    //if place exists isFavoited = true else false
+    // _loadFavoritePlaces();
+    clientService = ClientService();
   }
 
-  Future<void> fetchTotalRatings() async {
+  /* Future<void> fetchTotalRatings() async {
     try {
-      List<Rate> rates = await clientService.getRates(widget.placeId);
+      final rates = await clientService.getRates(widget.placeId);
       setState(() {
         totalRatings = rates.length;
       });
     } catch (e) {
       print('Failed to fetch total ratings: $e');
+    }
+  }
+  Future<void> checkIfUserRated() async {
+    String userId = await getUserId();
+    try {
+      final rates = await clientService.getRates(widget.placeId);
+      setState(() {
+        hasUserRated = rates.any((rate) => rate.user_id == userId);
+      });
+    } catch (e) {
+      print('Failed to fetch rates: $e');
     }
   }
 
@@ -53,29 +69,30 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
     return prefs.getString('userId') ?? '';
   }
 
-  Future<String> getUserName() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('userName') ?? '';
-  }
-
   void createRate(int rating) async {
+    if (hasUserRated) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('You have already submitted a review.')),
+      );
+      return;
+    }
+
     String userId = await getUserId();
-    String userName = await getUserName();
 
     Rate rate = Rate(
       id: DateTime.now().millisecondsSinceEpoch.toString(),
-      rate: rating.toDouble(),
-      userId: userId, // Use the userId from SharedPreferences
-      ratedId: widget.placeId,
-      topCount: 10,
+      rate: rating,
+      user_id: userId,
+      rated_id: widget.place.id,
       review: 'Great place!',
-      userName: userName, // Use the userName from SharedPreferences
+      rated_name: widget.place.name,
     );
 
     try {
-      await clientService.createRate(rate);
+      await clientService.createRate(rate, widget.place.id);
       setState(() {
         totalRatings++;
+        hasUserRated = true;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Rating submitted successfully!')),
@@ -87,6 +104,81 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
       );
     }
   }
+
+  void _loadFavoritePlaces() async {
+    try {
+      final favouritePlaces = await clientService.getFavorites();
+      setState(() {
+        isFavorited = favouritePlaces.contains(widget.place.id);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading favorite places: $e')),
+      );
+    }
+  }
+
+  void _toggleFavorite() async {
+    setState(() {
+      isFavorited = !isFavorited; // Optimistically update the UI
+    });
+    if (isFavorited) {
+      try {
+        final response = await clientService.addFavourite(widget.place.id);
+
+        if (response.statusCode != 200) {
+          // If the server fails, revert the UI change
+          setState(() {
+            isFavorited = !isFavorited;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content:
+                    Text('Failed to update favorite status: ${response.body}')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Favorite status updated successfully')),
+          );
+        }
+      } catch (e) {
+        setState(() {
+          isFavorited = !isFavorited;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating favorite status: $e')),
+        );
+      }
+    } else {
+      //remove function
+      try {
+        final response = await clientService.removeFavorite(widget.place.id);
+
+        if (response.statusCode != 200) {
+          // If the server fails, revert the UI change
+          setState(() {
+            isFavorited = !isFavorited;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content:
+                    Text('Failed to update favorite status: ${response.body}')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Favorite removed')),
+          );
+        }
+      } catch (e) {
+        setState(() {
+          isFavorited = !isFavorited;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating favorite status: $e')),
+        );
+      }
+    }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -131,18 +223,18 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Replace static image with dynamic list of images
-                      ...widget.place.placeImage.map((imageUrl) {
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Image.network(
-                            imageUrl, // Use imageUrl from placeImage list
-                            width: MediaQuery.of(context).size.width,
-                            height: 350,
-                            fit: BoxFit.cover,
-                          ),
-                        );
-                      }).toList(),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Image.network(
+                          widget.pub.pubImage!.isNotEmpty
+                              ? widget.pub.pubImage!
+                              : 'assets/images/vitrine1.png', // Use the single image or a default image
+                          width: MediaQuery.of(context).size.width,
+                          height: 350,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+
                       SizedBox(
                         height: 10,
                       ),
@@ -181,7 +273,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                                 horizontal: 20,
                               ),
                               child: Text(
-                                widget.place.name,
+                                widget.pub.title ?? 'No Title',
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 16,
@@ -195,13 +287,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                             children: [
                               Spacer(), // Pushes the button to the left
                               GestureDetector(
-                                // Wrap the favorite image with GestureDetector
-                                onTap: () {
-                                  setState(() {
-                                    isFavorited =
-                                        !isFavorited; // Toggle the state
-                                  });
-                                },
+                                // onTap: _toggleFavorite,
                                 child: Padding(
                                   padding: const EdgeInsets.all(5),
                                   child: Image.asset(
@@ -231,24 +317,25 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                           ),
                           SizedBox(width: 5),
                           Text(
-                            widget.place.location,
+                            widget.pub.address ?? 'No Address',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.black,
                             ),
                           ),
-                          Spacer(), // Pushes the remaining items to the right
+                          Spacer(),
                           Row(
                             children: List.generate(
                               5,
                               (index) => GestureDetector(
-                                onTap: () {
-                                  setState(() {
-                                    rating = index + 1; // Update rating
-                                  });
-                                  // Call createRate method here
-                                  createRate(rating);
-                                },
+                                /*  onTap: hasUserRated
+                                    ? null
+                                    : () {
+                                        setState(() {
+                                          rating = index + 1;
+                                        });
+                                        createRate(rating);
+                                      },*/
                                 child: Icon(
                                   Icons.star,
                                   color: index < rating
@@ -261,19 +348,18 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                           ),
                           SizedBox(width: 5),
                           Text(
-                            '$rating / 5', // Show current rating
+                            '$rating / 5',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.black,
                             ),
                           ),
-
                           SizedBox(width: 5),
                           Padding(
                             padding: const EdgeInsets.only(right: 10),
                           ),
                           Text(
-                            '($totalRatings reviews)', // Add space between text and reviews
+                            '($totalRatings reviews)',
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey,
@@ -282,34 +368,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                           SizedBox(width: 15),
                         ],
                       ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            SizedBox(
-                                height:
-                                    20), // Add spacing between the previous content and the description
-                            Text(
-                              'Description',
-                              style: TextStyle(
-                                fontSize: 16,
-                                color: Colors.black,
-                              ),
-                            ),
-                            SizedBox(
-                                height:
-                                    10), // Add spacing between the label and the description text
-                            Text(
-                              widget.place.description,
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.black,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+
                       Padding(
                         padding: EdgeInsets.symmetric(
                             horizontal: 20), // Add horizontal margin

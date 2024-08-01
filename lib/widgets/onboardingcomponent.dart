@@ -1,7 +1,7 @@
-import 'package:dealdiscover/screens/signin_screen.dart';
+import 'package:dealdiscover/screens/authentication/signin_screen.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../utils/colors.dart';
+import '../../utils/colors.dart';
 
 class GetStartBtn extends StatefulWidget {
   const GetStartBtn({

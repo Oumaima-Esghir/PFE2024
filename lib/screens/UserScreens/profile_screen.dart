@@ -1,6 +1,6 @@
-import 'package:dealdiscover/screens/EditProfile_screen.dart';
-import 'package:dealdiscover/screens/bottomnavbar.dart';
-import 'package:dealdiscover/screens/signin_screen.dart';
+import 'package:dealdiscover/screens/UserScreens/EditProfile_screen.dart';
+import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
+import 'package:dealdiscover/screens/authentication/signin_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

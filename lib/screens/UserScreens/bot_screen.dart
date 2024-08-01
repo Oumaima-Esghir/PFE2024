@@ -1,5 +1,5 @@
-import 'package:dealdiscover/screens/bottomnavbar.dart';
-import 'package:dealdiscover/screens/chat_screen.dart';
+import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
+import 'package:dealdiscover/screens/UserScreens/chat_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';

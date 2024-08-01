@@ -1,24 +1,26 @@
-import 'package:dealdiscover/screens/bottomnavbar.dart';
-import 'package:dealdiscover/screens/calendar_screen.dart';
+import 'package:dealdiscover/screens/PartnerScreens/deals_management_screen.dart';
+import 'package:dealdiscover/screens/menus/hidden_drawer.dart';
 import 'package:dealdiscover/utils/colors.dart';
-import 'package:intl/intl.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
+import 'package:intl/intl.dart';
 
-class AddPlanningScreen extends StatefulWidget {
-  const AddPlanningScreen({super.key});
+class AddDealScreen extends StatefulWidget {
+  const AddDealScreen({super.key});
 
   @override
-  State<AddPlanningScreen> createState() => _AddPlanningScreenState();
+  State<AddDealScreen> createState() => _AddDealScreenState();
 }
 
-class _AddPlanningScreenState extends State<AddPlanningScreen> {
+class _AddDealScreenState extends State<AddDealScreen> {
+  String? stateValue;
   bool isLoading = false;
-  DateTime? fromDate;
-  DateTime? toDate;
-  TimeOfDay? fromTime;
-  TimeOfDay? toTime;
-  int numberOfPersons = 1;
+  //DateTime? fromDate;
+  //DateTime? toDate;
+  //TimeOfDay? fromTime;
+  //TimeOfDay? toTime;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -47,7 +49,7 @@ class _AddPlanningScreenState extends State<AddPlanningScreen> {
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage('assets/images/add_editbg.png'),
+            image: AssetImage('assets/images/partnerbg.png'),
             fit: BoxFit.fill,
           ),
         ),
@@ -56,13 +58,35 @@ class _AddPlanningScreenState extends State<AddPlanningScreen> {
           padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
           child: Column(
             children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment
+                    .center, // Center child widgets horizontally
+                children: [
+                  Image.asset(
+                    'assets/images/addP.png',
+                    width: 100,
+                    height: 100,
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    "Add An Image",
+                    style: TextStyle(
+                      color: MyColors.btnBorderColor,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
               Container(
                 width: 350,
                 height: 655,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    SizedBox(height: 10),
+                    SizedBox(height: 20),
                     Text(
                       "Title",
                       style: TextStyle(
@@ -77,7 +101,7 @@ class _AddPlanningScreenState extends State<AddPlanningScreen> {
                       height: 55, // Adjust height as needed
                       child: TextField(
                         decoration: InputDecoration(
-                          hintText: "Birthday Going Out",
+                          hintText: "Write Your Title",
                           filled:
                               true, // Set to true to fill the TextField background
                           fillColor: MyColors.backbtn1,
@@ -113,7 +137,7 @@ class _AddPlanningScreenState extends State<AddPlanningScreen> {
                       height: 55, // Adjust height as needed
                       child: TextField(
                         decoration: InputDecoration(
-                          hintText: "Update your adress",
+                          hintText: "Write Your Adress",
                           filled:
                               true, // Set to true to fill the TextField background
                           fillColor: MyColors.backbtn1,
@@ -135,7 +159,7 @@ class _AddPlanningScreenState extends State<AddPlanningScreen> {
                       ),
                     ),
                     SizedBox(height: 20),
-                    Text(
+                    /* Text(
                       "Date & Time",
                       style: TextStyle(
                         color: MyColors.btnBorderColor,
@@ -335,60 +359,10 @@ class _AddPlanningScreenState extends State<AddPlanningScreen> {
                         ),
                       ],
                     ),
+                    */
                     SizedBox(height: 20),
                     Text(
-                      "Number Of Persons",
-                      style: TextStyle(
-                        color: MyColors.btnBorderColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    SizedBox(
-                      width: 350,
-                      height: 55,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: MyColors.backbtn1,
-                          borderRadius: BorderRadius.circular(10.0),
-                          border: Border.all(
-                            color: MyColors.btnColor,
-                            width: 1,
-                          ),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  if (numberOfPersons > 1) {
-                                    numberOfPersons--;
-                                  }
-                                });
-                              },
-                              icon: Icon(Icons.arrow_drop_down),
-                            ),
-                            Text(
-                              numberOfPersons.toString(),
-                              style: TextStyle(fontSize: 18),
-                            ),
-                            IconButton(
-                              onPressed: () {
-                                setState(() {
-                                  numberOfPersons++;
-                                });
-                              },
-                              icon: Icon(Icons.arrow_drop_up),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      "Reminder",
+                      "Description",
                       style: TextStyle(
                         color: MyColors.btnBorderColor,
                         fontSize: 16,
@@ -401,7 +375,7 @@ class _AddPlanningScreenState extends State<AddPlanningScreen> {
                       height: 55, // Adjust height as needed
                       child: TextField(
                         decoration: InputDecoration(
-                          hintText: "Add Reminder",
+                          hintText: "Write Your Description",
                           filled:
                               true, // Set to true to fill the TextField background
                           fillColor: MyColors.backbtn1,
@@ -419,6 +393,61 @@ class _AddPlanningScreenState extends State<AddPlanningScreen> {
                             ),
                             borderRadius: BorderRadius.circular(10.0),
                           ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20),
+                    Text(
+                      "Deal State",
+                      style: TextStyle(
+                        color: MyColors.btnBorderColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Container(
+                      height: 55, // Adjust height as needed
+                      decoration: BoxDecoration(
+                        color: MyColors.backbtn1,
+                        border: Border.all(
+                            color: MyColors.btnColor), // White border
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 60),
+                        // Add horizontal padding
+                        child: Row(
+                          children: [
+                            // Gender radio buttons
+                            Radio<String>(
+                              value: "promo",
+                              groupValue: stateValue,
+                              onChanged: (value) {
+                                setState(() {
+                                  stateValue = value;
+                                });
+                              },
+                              activeColor: MyColors
+                                  .btnBorderColor, // Change the color of the selected radio button
+                            ),
+                            Text("Promo"),
+                            Radio<String>(
+                              value: "not in promo",
+                              groupValue: stateValue,
+                              onChanged: (value) {
+                                setState(() {
+                                  stateValue = value;
+                                });
+                              },
+                              activeColor: MyColors
+                                  .btnBorderColor, // Change the color of the selected radio button
+                            ),
+                            Text("Not in Promo"),
+                          ],
                         ),
                       ),
                     ),
@@ -442,7 +471,7 @@ class _AddPlanningScreenState extends State<AddPlanningScreen> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => CalendarScreen(),
+                              builder: (context) => DealsManagementScreen(),
                             ),
                           );
                         },
@@ -491,7 +520,7 @@ class _AddPlanningScreenState extends State<AddPlanningScreen> {
         Navigator.pushReplacement(
           context,
           CupertinoPageRoute(
-            builder: (_) => const BottomNavBar(),
+            builder: (_) => const HiddenDrawer(),
           ),
         );
       });
