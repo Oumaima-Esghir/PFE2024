@@ -282,6 +282,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   border: OutlineInputBorder(),
                                 ),
                               ),
+                              SizedBox(
+                                height: 20,
+                              ),
                               Text(
                                 "Last Name",
                                 style: TextStyle(

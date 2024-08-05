@@ -3,7 +3,7 @@ import 'dart:convert';
 
 class Pub {
   String id;
-  final int? rating;
+  final double? rating;
   String? title;
   String? address;
   String? description;
@@ -13,6 +13,7 @@ class Pub {
   final String? state;
   String? duree;
   final int? pourcentage;
+  
 
   Pub({
     required this.id,
@@ -30,7 +31,7 @@ class Pub {
 
   Pub copyWith({
     String? id,
-    int? rating,
+    double? rating,
     String? title,
     String? address,
     String? description,
@@ -74,19 +75,17 @@ class Pub {
 
   factory Pub.fromMap(Map<String, dynamic> map) {
     return Pub(
-      id: map['_id'] as String,
-      rating: map['rating'] != null ? map['rating'] as int : null,
+      id: map['id'] as String,
+      rating: map['rating'] != null ? map['rating'] as double : null,
       title: map['title'] != null ? map['title'] as String : null,
       address: map['address'] != null ? map['address'] as String : null,
-      description:
-          map['description'] != null ? map['description'] as String : null,
-      pubImage: map['pubImage'] as String,
+      description: map['description'] != null ? map['description'] as String : null,
+      pubImage: map['pubImage'] != null ? map['pubImage'] as String : null,
       category: map['category'] != null ? map['category'] as String : null,
       nb_likes: map['nb_likes'] != null ? map['nb_likes'] as int : null,
       state: map['state'] != null ? map['state'] as String : null,
       duree: map['duree'] != null ? map['duree'] as String : null,
-      pourcentage:
-          map['pourcentage'] != null ? map['pourcentage'] as int : null,
+      pourcentage: map['pourcentage'] != null ? map['pourcentage'] as int : null,
     );
   }
 

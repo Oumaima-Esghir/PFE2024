@@ -1,5 +1,7 @@
+import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:dealdiscover/widgets/PlanningItem.dart' as PlanningItemWidget;
 import 'package:table_calendar/table_calendar.dart';
 
 import 'package:intl/intl.dart';
@@ -12,27 +14,46 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  final String title = 'Calendar';
+  // final String title = 'Calendar';
 
-  DateTime _currentDate = DateTime.now();
+  // DateTime _currentDate = DateTime.now();
 
-  Map<DateTime, List<String>> _events = {
+/*  Map<DateTime, List<String>> _events = {
     DateTime(2022, 4, 20): ['Event 1', 'Event 2'],
     DateTime(2022, 4, 21): ['Event 3'],
     DateTime(2022, 4, 22): ['Event 4', 'Event 5', 'Event 6'],
-  };
+  };*/
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: Text(title),
+        backgroundColor: Colors.transparent,
+        title: Text("Planning"),
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/Planning.png'),
+            fit: BoxFit.fill,
+          ),
+        ),
+        //  child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
+          child: Column(
+            children: [
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: 100,
+                child: const Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    /*Container(
               margin: EdgeInsets.all(16.0),
               child: Text(
                 'Events for ${DateFormat('MMMM yyyy').format(_currentDate)}',
@@ -41,15 +62,61 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   fontSize: 20.0,
                 ),
               ),
-            ),
-            _buildCalendar(),
-          ],
+            ),*/
+                    //  _buildCalendar(),
+                  ],
+                ),
+              ),
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 0, bottom: 10),
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 0),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 30, vertical: 20),
+                    decoration: const BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(50),
+                        topRight: Radius.circular(50),
+                      ),
+                      color: Colors.white,
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          height: 20,
+                        ),
+                        SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Column(
+                            children: [
+                              PlanningItemWidget.PlanningItem(),
+                              SizedBox(height: 20),
+                              PlanningItemWidget.PlanningItem(),
+                              SizedBox(height: 20),
+                              PlanningItemWidget.PlanningItem(),
+                              SizedBox(height: 20),
+                              PlanningItemWidget.PlanningItem(),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
+      // ),
     );
   }
 
-  Widget _buildCalendar() {
+  /*Widget _buildCalendar() {
     return Container(
       margin: EdgeInsets.all(16.0),
       child: TableCalendar(
@@ -79,6 +146,5 @@ class _CalendarScreenState extends State<CalendarScreen> {
         },
       ),
     );
-  }
-
+  }*/
 }
