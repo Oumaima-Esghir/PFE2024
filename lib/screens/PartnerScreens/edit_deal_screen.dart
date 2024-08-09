@@ -6,14 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:intl/intl.dart';
 
-class AddDealScreen extends StatefulWidget {
-  const AddDealScreen({super.key});
+class EditDealScreen extends StatefulWidget {
+  const EditDealScreen({super.key});
 
   @override
-  State<AddDealScreen> createState() => _AddDealScreenState();
+  State<EditDealScreen> createState() => _EditDealScreenState();
 }
 
-class _AddDealScreenState extends State<AddDealScreen> {
+class _EditDealScreenState extends State<EditDealScreen> {
   String? stateValue;
   bool isLoading = false;
   //DateTime? fromDate;
@@ -71,7 +71,7 @@ class _AddDealScreenState extends State<AddDealScreen> {
                     height: 10,
                   ),
                   Text(
-                    "Add An Image",
+                    "Edit Your Image",
                     style: TextStyle(
                       color: MyColors.btnBorderColor,
                       fontSize: 16,
@@ -158,6 +158,208 @@ class _AddDealScreenState extends State<AddDealScreen> {
                         ),
                       ),
                     ),
+                    SizedBox(height: 20),
+                    /* Text(
+                      "Date & Time",
+                      style: TextStyle(
+                        color: MyColors.btnBorderColor,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    SizedBox(height: 10),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .spaceBetween, // Adjust alignment as needed
+                      children: [
+                        SizedBox(
+                          width:
+                              170, // Adjust width as needed for the first date picker
+                          height: 55,
+                          child: TextField(
+                            readOnly: true,
+                            onTap: () {
+                              // Add logic to open date picker and set selected date to 'fromDate'
+                              showDatePicker(
+                                context: context,
+                                initialDate: fromDate ?? DateTime.now(),
+                                firstDate: DateTime(1900),
+                                lastDate: DateTime.now(),
+                              ).then((selectedDate) {
+                                if (selectedDate != null) {
+                                  setState(() {
+                                    fromDate = selectedDate;
+                                  });
+                                }
+                              });
+                            },
+                            decoration: InputDecoration(
+                              hintText: fromDate != null
+                                  ? "${DateFormat('dd-MM-yyyy').format(fromDate!)}"
+                                  : "Select From Date",
+                              filled: true,
+                              fillColor: MyColors.backbtn1,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: MyColors.btnColor,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: MyColors.btnBorderColor,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              suffixIcon: Icon(Icons.calendar_month_rounded),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width:
+                              170, // Adjust width as needed for the second date picker
+                          height: 55,
+                          child: TextField(
+                            readOnly: true,
+                            onTap: () {
+                              // Add logic to open date picker and set selected date to 'toDate'
+                              showDatePicker(
+                                context: context,
+                                initialDate: toDate ?? DateTime.now(),
+                                firstDate: DateTime(1900),
+                                lastDate: DateTime(2100),
+                              ).then((selectedDate) {
+                                if (selectedDate != null) {
+                                  setState(() {
+                                    toDate = selectedDate;
+                                  });
+                                }
+                              });
+                            },
+                            decoration: InputDecoration(
+                              hintText: toDate != null
+                                  ? "${DateFormat('dd-MM-yyyy').format(toDate!)}"
+                                  : "Select To Date",
+                              filled: true,
+                              fillColor: MyColors.backbtn1,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: MyColors.btnColor,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: MyColors.btnBorderColor,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              suffixIcon: Icon(Icons.calendar_month_rounded),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(
+                      height: 10,
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment
+                          .spaceBetween, // Adjust alignment as needed
+                      children: [
+                        SizedBox(
+                          width:
+                              170, // Adjust width as needed for the first time picker
+                          height: 55,
+                          child: TextField(
+                            readOnly: true,
+                            onTap: () {
+                              // Add logic to open time picker and set selected time to 'fromTime'
+                              showTimePicker(
+                                context: context,
+                                initialTime: fromTime ?? TimeOfDay.now(),
+                              ).then((selectedTime) {
+                                if (selectedTime != null) {
+                                  setState(() {
+                                    fromTime = selectedTime;
+                                  });
+                                }
+                              });
+                            },
+                            decoration: InputDecoration(
+                              hintText: fromTime != null
+                                  ? "${fromTime!.hour}:${fromTime!.minute}"
+                                  : "Select From Time",
+                              filled: true,
+                              fillColor: MyColors.backbtn1,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: MyColors.btnColor,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: MyColors.btnBorderColor,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              suffixIcon: Icon(Icons.access_time),
+                            ),
+                          ),
+                        ),
+                        SizedBox(
+                          width:
+                              170, // Adjust width as needed for the second time picker
+                          height: 55,
+                          child: TextField(
+                            readOnly: true,
+                            onTap: () {
+                              // Add logic to open time picker and set selected time to 'toTime'
+                              showTimePicker(
+                                context: context,
+                                initialTime: toTime ?? TimeOfDay.now(),
+                              ).then((selectedTime) {
+                                if (selectedTime != null) {
+                                  setState(() {
+                                    toTime = selectedTime;
+                                  });
+                                }
+                              });
+                            },
+                            decoration: InputDecoration(
+                              hintText: toTime != null
+                                  ? "${toTime!.hour}:${toTime!.minute}"
+                                  : "Select To Time",
+                              filled: true,
+                              fillColor: MyColors.backbtn1,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: MyColors.btnColor,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: MyColors.btnBorderColor,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              suffixIcon: Icon(Icons.access_time),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    */
                     SizedBox(height: 20),
                     Text(
                       "Description",

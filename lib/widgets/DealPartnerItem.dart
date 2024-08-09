@@ -1,3 +1,4 @@
+import 'package:dealdiscover/screens/PartnerScreens/edit_deal_screen.dart';
 import 'package:dealdiscover/screens/PromoDetails_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/material.dart';
@@ -39,23 +40,32 @@ class _DealPartnerItemState extends State<DealPartnerItem> {
                 ),
                 Row(
                   children: [
-                    Container(
-                      margin: EdgeInsets.only(left: 8),
-                      width: 50,
-                      height: 50,
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Colors.black,
-                          width: 1.5,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => EditDealScreen()),
+                        );
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(left: 8),
+                        width: 50,
+                        height: 50,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color: Colors.black,
+                            width: 1.5,
+                          ),
+                          borderRadius: BorderRadius.circular(8),
                         ),
-                        borderRadius: BorderRadius.circular(8),
+                        child: Center(
+                            child: Image.asset(
+                          'assets/images/edit.png',
+                          width: 30,
+                          height: 30,
+                        )),
                       ),
-                      child: Center(
-                          child: Image.asset(
-                        'assets/images/edit.png',
-                        width: 30,
-                        height: 30,
-                      )),
                     ),
                     Container(
                       margin: EdgeInsets.only(left: 6),
