@@ -8,6 +8,7 @@ import 'package:dealdiscover/widgets/DealCard.dart' as DealCardWidget;
 import 'package:dealdiscover/widgets/DealCard.dart';
 import 'package:dealdiscover/widgets/PromoCard.dart' as PromoCardWidget;
 import 'package:dealdiscover/model/pub.dart';
+import 'package:dealdiscover/widgets/PromoCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -21,11 +22,16 @@ class _AccueilScreenState extends State<AccueilScreen> {
   // late Future<List<Pub>>? futurePubs;
   // ClientService clientService = ClientService();
   List<Pub> filteredPubs = [];
+  List<Pub> PromoPubs = [];
+
   @override
   void initState() {
     super.initState();
     filteredPubs = listOfIPubs
         .where((pub) => pub.state != null && pub.state == 'offre')
+        .toList();
+    PromoPubs = listOfIPubs
+        .where((pub) => pub.state != null && pub.state == 'promo')
         .toList();
     // futurePubs = clientService.getPubs();
     // print("zz" + futurePubs.toString());
@@ -226,11 +232,23 @@ class _AccueilScreenState extends State<AccueilScreen> {
                           scrollDirection: Axis.vertical,
                           child: Column(
                             children: [
-                              PromoCardWidget.PromoCard(),
-                              SizedBox(height: 10),
-                              PromoCardWidget.PromoCard(),
-                              SizedBox(height: 10),
-                              PromoCardWidget.PromoCard(),
+                              Builder(builder: (BuildContext context) {
+                                return SingleChildScrollView(
+                                  scrollDirection: Axis.vertical,
+                                  child: Column(
+                                    children: PromoPubs.map((pub) {
+                                      print(pub);
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 5.0),
+                                        child: PromoCard(
+                                          pub: pub, // Pass the pub to DealCard
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                );
+                              }),
                             ],
                           ),
                         ),

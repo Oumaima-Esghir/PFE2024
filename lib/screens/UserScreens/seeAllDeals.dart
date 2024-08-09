@@ -1,6 +1,8 @@
+import 'package:dealdiscover/model/pub.dart';
 import 'package:dealdiscover/screens/UserScreens/accueil_screen.dart';
 import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
 import 'package:dealdiscover/widgets/AllDealsCard.dart' as AllDealsCardWidget;
+import 'package:dealdiscover/widgets/PromoCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -13,6 +15,17 @@ class SeeAllDealsScreen extends StatefulWidget {
 
 class _SeeAllDealsScreenState extends State<SeeAllDealsScreen> {
   bool isLoading = false;
+  List<Pub> PromoPubs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    PromoPubs = listOfIPubs
+        .where((pub) => pub.state != null && pub.state == 'offre')
+        .toList();
+    // futurePubs = clientService.getPubs();
+    // print("zz" + futurePubs.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -68,17 +81,22 @@ class _SeeAllDealsScreenState extends State<SeeAllDealsScreen> {
                 SizedBox(
                   height: 40,
                 ),
-                AllDealsCardWidget.AllDealsCard(),
-                SizedBox(height: 20),
-                AllDealsCardWidget.AllDealsCard(),
-                SizedBox(height: 20),
-                AllDealsCardWidget.AllDealsCard(),
-                SizedBox(height: 20),
-                AllDealsCardWidget.AllDealsCard(),
-                SizedBox(height: 20),
-                AllDealsCardWidget.AllDealsCard(),
-                SizedBox(height: 20),
-                AllDealsCardWidget.AllDealsCard(),
+                Builder(builder: (BuildContext context) {
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Column(
+                      children: PromoPubs.map((pub) {
+                        print(pub);
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                          child: PromoCard(
+                            pub: pub, // Pass the pub to DealCard
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  );
+                }),
               ],
             ),
           ),

@@ -225,7 +225,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                     children: [
                       Padding(
                         padding: const EdgeInsets.symmetric(vertical: 8.0),
-                        child: Image.network(
+                        child: Image.asset(
                           widget.pub.pubImage!.isNotEmpty
                               ? widget.pub.pubImage!
                               : 'assets/images/vitrine1.png', // Use the single image or a default image
@@ -247,7 +247,8 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => PartnerProfileScreen(),
+                                  builder: (context) =>
+                                      PartnerProfileScreen(pub: widget.pub),
                                 ),
                               );
                             },

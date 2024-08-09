@@ -1,8 +1,12 @@
-import 'package:dealdiscover/screens/PromoDetails_screen.dart';
+import 'package:dealdiscover/model/pub.dart';
+import 'package:dealdiscover/screens/dealDetails_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class PromoCard extends StatefulWidget {
+  final Pub pub;
+
+  const PromoCard({super.key, required this.pub});
   @override
   _PromoCardCardState createState() => _PromoCardCardState();
 }
@@ -34,7 +38,10 @@ class _PromoCardCardState extends State<PromoCard> {
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: Image.asset(
-                    'assets/images/vitrine1.png',
+                    widget.pub.pubImage == null ||
+                            widget.pub.pubImage!.isNotEmpty
+                        ? widget.pub.pubImage!
+                        : 'assets/images/vitrine1.png',
                     width: 160,
                     height: 180,
                     fit: BoxFit.cover,
@@ -59,7 +66,7 @@ class _PromoCardCardState extends State<PromoCard> {
                               children: [
                                 SizedBox(width: 5),
                                 Text(
-                                  rating,
+                                  widget.pub.rating?.toString() ?? '',
                                   style: TextStyle(color: Colors.black),
                                 ),
                                 SizedBox(width: 5),
@@ -90,20 +97,23 @@ class _PromoCardCardState extends State<PromoCard> {
                       SizedBox(height: 35),
                       Center(
                         child: Text(
-                          'The Secret Coffee Shop',
+                          widget.pub.title ?? 'No Title',
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 14,
                           ),
                         ),
                       ),
-                      SizedBox(height: 40),
+                      SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => PromoDetailsScreen(),
+                              builder: (context) => DealDetailsScreen(
+                                pubId: widget.pub.id,
+                                pub: widget.pub,
+                              ),
                             ),
                           );
                         },
@@ -131,7 +141,7 @@ class _PromoCardCardState extends State<PromoCard> {
                               'See Details',
                               style: TextStyle(color: Colors.black),
                             ),
-                            SizedBox(width: 15),
+                            SizedBox(width: 10),
                             Icon(Icons.arrow_forward, color: Colors.black),
                           ],
                         ),

@@ -1,5 +1,8 @@
+import 'package:dealdiscover/model/pub.dart';
 import 'package:dealdiscover/screens/UserScreens/accueil_screen.dart';
+import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
 import 'package:dealdiscover/widgets/PromoCard.dart' as PromoCardWidget;
+import 'package:dealdiscover/widgets/PromoCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -12,12 +15,24 @@ class SeeAllPromotionsScreen extends StatefulWidget {
 
 class _SeeAllDealsScreenState extends State<SeeAllPromotionsScreen> {
   bool isLoading = false;
+  List<Pub> PromoPubs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    PromoPubs = listOfIPubs
+        .where((pub) => pub.state != null && pub.state == 'promo')
+        .toList();
+    // futurePubs = clientService.getPubs();
+    // print("zz" + futurePubs.toString());
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         actions: [
           GestureDetector(
@@ -67,17 +82,22 @@ class _SeeAllDealsScreenState extends State<SeeAllPromotionsScreen> {
                 SizedBox(
                   height: 40,
                 ),
-                PromoCardWidget.PromoCard(),
-                SizedBox(height: 20),
-                PromoCardWidget.PromoCard(),
-                SizedBox(height: 20),
-                PromoCardWidget.PromoCard(),
-                SizedBox(height: 20),
-                PromoCardWidget.PromoCard(),
-                SizedBox(height: 20),
-                PromoCardWidget.PromoCard(),
-                SizedBox(height: 20),
-                PromoCardWidget.PromoCard(),
+                Builder(builder: (BuildContext context) {
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.vertical,
+                    child: Column(
+                      children: PromoPubs.map((pub) {
+                        print(pub);
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                          child: PromoCard(
+                            pub: pub, // Pass the pub to DealCard
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  );
+                }),
               ],
             ),
           ),
@@ -96,7 +116,7 @@ class _SeeAllDealsScreenState extends State<SeeAllPromotionsScreen> {
         Navigator.pushReplacement(
           context,
           CupertinoPageRoute(
-            builder: (_) => const AccueilScreen(),
+            builder: (_) => const BottomNavBar(),
           ),
         );
       });

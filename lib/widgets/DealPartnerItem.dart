@@ -1,5 +1,4 @@
 import 'package:dealdiscover/screens/PartnerScreens/edit_deal_screen.dart';
-import 'package:dealdiscover/screens/PromoDetails_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/material.dart';
 

@@ -5,15 +5,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class PartnerProfileScreen extends StatefulWidget {
-  const PartnerProfileScreen({super.key});
+  final Pub pub;
+
+  const PartnerProfileScreen({super.key, required this.pub});
 
   @override
   State<PartnerProfileScreen> createState() => _PartnerProfileScreenState();
 }
 
 class _PartnerProfileScreenState extends State<PartnerProfileScreen> {
-  
-  late Pub pub;
   bool isLoading1 = false;
 
   @override
@@ -62,7 +62,10 @@ class _PartnerProfileScreenState extends State<PartnerProfileScreen> {
                             90), // Adjust the radius as needed
 
                         child: Image(
-                          image: AssetImage('assets/images/vitrine1.png'),
+                          image: AssetImage(widget.pub.pubImage == null ||
+                                  widget.pub.pubImage!.isNotEmpty
+                              ? widget.pub.pubImage!
+                              : 'assets/images/vitrine1.png'),
                           width: 180,
                           height: 180,
 
@@ -71,7 +74,7 @@ class _PartnerProfileScreenState extends State<PartnerProfileScreen> {
                       ),
                       SizedBox(height: 40),
                       Text(
-                        "The Secret Coffe Shop",
+                        widget.pub.title ?? 'No Title',
                         style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -213,7 +216,8 @@ class _PartnerProfileScreenState extends State<PartnerProfileScreen> {
         Navigator.pushReplacement(
           context,
           CupertinoPageRoute(
-            builder: (_) => DealDetailsScreen(pubId: pub.id, pub: pub),
+            builder: (_) =>
+                DealDetailsScreen(pubId: widget.pub.id, pub: widget.pub),
           ),
         );
       });

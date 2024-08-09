@@ -1,4 +1,3 @@
-import 'package:dealdiscover/screens/PromoDetails_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -100,12 +99,12 @@ class _AllDealsCardState extends State<AllDealsCard> {
                       SizedBox(height: 40),
                       ElevatedButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => PromoDetailsScreen(),
-                            ),
-                          );
+                          // Navigator.push(
+                          //   context,
+                          //   MaterialPageRoute(
+                          //     builder: (context) => {},
+                          //   ),
+                          // );
                         },
                         style: ButtonStyle(
                           backgroundColor: MaterialStateProperty.all<Color>(
