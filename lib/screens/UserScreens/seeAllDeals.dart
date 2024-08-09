@@ -1,4 +1,5 @@
 import 'package:dealdiscover/screens/UserScreens/accueil_screen.dart';
+import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
 import 'package:dealdiscover/widgets/AllDealsCard.dart' as AllDealsCardWidget;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -96,7 +97,7 @@ class _SeeAllDealsScreenState extends State<SeeAllDealsScreen> {
         Navigator.pushReplacement(
           context,
           CupertinoPageRoute(
-            builder: (_) => const AccueilScreen(),
+            builder: (_) => BottomNavBar(),
           ),
         );
       });

@@ -2,6 +2,7 @@ import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dealdiscover/widgets/PlanningItem.dart' as PlanningItemWidget;
+import 'package:flutter/widgets.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 import 'package:intl/intl.dart';
@@ -30,7 +31,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
-        title: Text("Planning"),
       ),
       body: Container(
         width: double.infinity,
@@ -67,43 +67,42 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   ],
                 ),
               ),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 0, bottom: 10),
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 0),
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 20),
-                    decoration: const BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(50),
-                        topRight: Radius.circular(50),
+              Expanded(
+                child: Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 0, bottom: 0),
+                    child: Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 0),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 30, vertical: 5),
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(50),
+                          topRight: Radius.circular(50),
+                        ),
+                        color: Colors.white,
                       ),
-                      color: Colors.white,
-                    ),
-                    child: ListView(
-                      // crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        SizedBox(
-                          height: 20,
-                        ),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.vertical,
-                          child: Column(
-                            children: [
-                              PlanningItemWidget.PlanningItem(),
-                              SizedBox(height: 20),
-                              PlanningItemWidget.PlanningItem(),
-                              SizedBox(height: 20),
-                              PlanningItemWidget.PlanningItem(),
-                              SizedBox(height: 20),
-                              PlanningItemWidget.PlanningItem(),
-                            ],
+                      child: ListView(
+                        // crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          SingleChildScrollView(
+                            scrollDirection: Axis.vertical,
+                            child: Column(
+                              children: [
+                                PlanningItemWidget.PlanningItem(),
+                                SizedBox(height: 20),
+                                PlanningItemWidget.PlanningItem(),
+                                SizedBox(height: 20),
+                                PlanningItemWidget.PlanningItem(),
+                                SizedBox(height: 20),
+                                PlanningItemWidget.PlanningItem(),
+                              ],
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),

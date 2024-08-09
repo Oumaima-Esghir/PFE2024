@@ -142,8 +142,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             ),
 
             /// ---------------------------
-            Expanded(
-              flex: 1,
+            SizedBox(
+              // flex: 1,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

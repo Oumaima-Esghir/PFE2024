@@ -130,7 +130,7 @@ class _DealCardState extends State<DealCard> {
                       ),
                       child: ClipRRect(
                         borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
+                        child: Image.asset(
                           widget.pub.pubImage == null ||
                                   widget.pub.pubImage!.isNotEmpty
                               ? widget.pub.pubImage!

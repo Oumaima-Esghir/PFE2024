@@ -9,7 +9,7 @@ class Partenaire {
   String email;
   String password;
   String adress;
-  final List<Pub> publications;
+  // final List<Pub> publications;
 
   Partenaire({
     required this.partenaire_id,
@@ -18,7 +18,7 @@ class Partenaire {
     required this.email,
     required this.password,
     required this.adress,
-    required this.publications,
+    // required this.publications,
   });
 
   Partenaire copyWith({
@@ -37,7 +37,7 @@ class Partenaire {
       email: email ?? this.email,
       password: password ?? this.password,
       adress: adress ?? this.adress,
-      publications: publications ?? this.publications,
+      // publications: publications ?? this.publications,
     );
   }
 
@@ -49,7 +49,7 @@ class Partenaire {
       'email': email,
       'password': password,
       'adress': adress,
-      'publications': publications.map((x) => x.toMap()).toList(),
+      // 'publications': publications.map((x) => x.toMap()).toList(),
     };
   }
 
@@ -62,8 +62,8 @@ class Partenaire {
       email: map['email'] as String,
       password: map['password'] as String,
       adress: map['adress'] as String,
-      publications: List<Pub>.from((map['publications'] as List)
-          .map<Pub>((x) => Pub.fromMap(x as Map<String, dynamic>))),
+      // publications: List<Pub>.from((map['publications'] as List)
+      // .map<Pub>((x) => Pub.fromMap(x as Map<String, dynamic>))),
     );
   }
 
@@ -74,7 +74,7 @@ class Partenaire {
 
   @override
   String toString() {
-    return 'Partenaire(partenaire_id: $partenaire_id, name: $name, image: $image, email: $email, password: $password, adress: $adress, publications: $publications)';
+    return 'Partenaire(partenaire_id: $partenaire_id, name: $name, image: $image, email: $email, password: $password, adress: $adress,)';
   }
 
   @override
@@ -86,8 +86,8 @@ class Partenaire {
         other.image == image &&
         other.email == email &&
         other.password == password &&
-        other.adress == adress &&
-        listEquals(other.publications, publications);
+        other.adress == adress;
+    // listEquals(other.publications, publications);
   }
 
   @override
@@ -97,7 +97,7 @@ class Partenaire {
         image.hashCode ^
         email.hashCode ^
         password.hashCode ^
-        adress.hashCode ^
-        publications.hashCode;
+        adress.hashCode;
+    // publications.hashCode;
   }
 }

@@ -65,8 +65,8 @@ class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
       email: _email,
       password: _password,
       adress: _adressController.text,
-      image: '', // Provide a default empty string for the image
-      publications: [], // Provide a default empty list for publications
+      image:
+          '', // Provide a default empty string for the image, // Provide a default empty list for publications
     );
 
     ClientService clientService = ClientService();

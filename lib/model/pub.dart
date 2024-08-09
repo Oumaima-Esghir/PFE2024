@@ -1,3 +1,4 @@
+/*
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
@@ -131,3 +132,86 @@ class Pub {
         pourcentage.hashCode;
   }
 }
+*/
+import 'dart:convert';
+
+class Pub {
+  String id;
+  final double? rating;
+  String? title;
+  String? address;
+  String? description;
+  final String? pubImage;
+  String? category;
+  final String? state;
+  String? duree;
+  final int? pourcentage;
+
+  ///
+  Pub({
+    required this.id,
+    required this.rating,
+    required this.title,
+    required this.address,
+    required this.description,
+    required this.pubImage,
+    required this.category,
+    required this.state,
+    this.duree,
+    this.pourcentage,
+  });
+}
+
+List<Pub> listOfIPubs = [
+  Pub(
+    id: "1",
+    rating: 6.5,
+    title: "Hotel Les Palmiers",
+    address: "Monastir",
+    description:
+        "Hotel les Palmiers is located directly on Skanes beach, a 5-minute drive from Monastir city center. It offers rooms with views of the sea or the outdoor swimming pools and garden. ",
+    pubImage: "assets/images/palmier.png",
+    category: "hotel",
+    state: "offre",
+    //duree: "DealDiscover",
+    //pourcentage: 20,
+  ),
+  Pub(
+    id: "2",
+    rating: 4.3,
+    title: "Café Sidi Salem La Grotte",
+    address: "Mahdia",
+    description: "promo sur la pizza ",
+    pubImage: "assets/images/sidisalem.jpg",
+    category: "restaurant",
+    state: "promo",
+    duree: "2j",
+    pourcentage: 50,
+  ),
+  Pub(
+    id: "3",
+    rating: 5,
+    title: "Marina Cap Monastir- Appart'Hôtel",
+    address: "hotel",
+    description:
+        "Located next to the marina and the beach, in a 5 minutes walk from the city center, the apart hotel Marina Cap Monastir is ideal for a relaxing stay.",
+    pubImage: "assets/images/marina.png",
+    category: "hotel",
+    state: "offre",
+    //duree: "DealDiscover",
+    //pourcentage: 20,
+  ),
+  Pub(
+    id: "4",
+    rating: 4.3,
+    title: "El Jem Amphitheater",
+    address: "ElJem",
+    description:
+        "This vast, golden-stoned amphitheater, dating from the 2nd century CE, rises to 40 meters high and is the fourth largest in the world, as well as being one of the best preserved surviving examples of amphitheater architecture.",
+    pubImage: "assets/images/logo.png",
+    category: "monument",
+    state: "offre",
+    //duree: "DealDiscover",
+    //pourcentage: 20,
+  ),
+];

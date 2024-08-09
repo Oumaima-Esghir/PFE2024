@@ -128,26 +128,26 @@ class _SigninScreenState extends State<SigninScreen> {
                           SizedBox(
                             height: 10,
                           ),
-                          DropdownButton<String>(
-                            value: _selectedUserType,
-                            onChanged: (String? newValue) {
-                              setState(() {
-                                _selectedUserType = newValue!;
-                              });
-                            },
-                            items: <String>['user', 'partner']
-                                .map<DropdownMenuItem<String>>((String value) {
-                              return DropdownMenuItem<String>(
-                                value: value,
-                                child: Text(
-                                  value == 'user' ? 'User' : 'Partner',
-                                  style: TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                              );
-                            }).toList(),
-                          ),
+                          // DropdownButton<String>(
+                          //   value: _selectedUserType,
+                          //   onChanged: (String? newValue) {
+                          //     setState(() {
+                          //       _selectedUserType = newValue!;
+                          //     });
+                          //   },
+                          //   items: <String>['user', 'partner']
+                          //       .map<DropdownMenuItem<String>>((String value) {
+                          //     return DropdownMenuItem<String>(
+                          //       value: value,
+                          //       child: Text(
+                          //         value == 'user' ? 'User' : 'Partner',
+                          //         style: TextStyle(
+                          //             fontSize: 16,
+                          //             fontWeight: FontWeight.bold),
+                          //       ),
+                          //     );
+                          //   }).toList(),
+                          // ),
                           SizedBox(height: 20),
                           Text(
                             "Email",

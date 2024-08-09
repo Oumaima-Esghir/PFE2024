@@ -7,32 +7,38 @@ import 'package:dealdiscover/utils/colors.dart';
 import 'package:dealdiscover/widgets/DealCard.dart' as DealCardWidget;
 import 'package:dealdiscover/widgets/DealCard.dart';
 import 'package:dealdiscover/widgets/PromoCard.dart' as PromoCardWidget;
+import 'package:dealdiscover/model/pub.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class AccueilScreen extends StatefulWidget {
   const AccueilScreen({Key? key}) : super(key: key);
-
   @override
   _AccueilScreenState createState() => _AccueilScreenState();
 }
 
 class _AccueilScreenState extends State<AccueilScreen> {
-  late Future<List<Pub>>? futurePubs;
-  ClientService clientService = ClientService();
+  // late Future<List<Pub>>? futurePubs;
+  // ClientService clientService = ClientService();
+  List<Pub> filteredPubs = [];
   @override
   void initState() {
     super.initState();
-    futurePubs = clientService.getPubs();
-    print("zz" + futurePubs.toString());
+    filteredPubs = listOfIPubs
+        .where((pub) => pub.state != null && pub.state == 'offre')
+        .toList();
+    // futurePubs = clientService.getPubs();
+    // print("zz" + futurePubs.toString());
   }
 
   bool isLoading = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
         actions: [
           GestureDetector(
@@ -162,47 +168,23 @@ class _AccueilScreenState extends State<AccueilScreen> {
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: [
-                              FutureBuilder<List<Pub>>(
-                                future: futurePubs,
-                                builder: (context, snapshot) {
-                                  if (snapshot.connectionState ==
-                                      ConnectionState.waiting) {
-                                    return Center(
-                                        child: CircularProgressIndicator());
-                                  } else if (snapshot.hasError) {
-                                    return Center(
-                                        child:
-                                            Text('Error: ${snapshot.error}'));
-                                  } else if (snapshot.hasData) {
-                                    List<Pub> pubs = snapshot.data!;
-                                    // Filter pubs based on state 'offre' and handle null values
-                                    List<Pub> filteredPubs = pubs
-                                        .where((pub) =>
-                                            pub.state != null &&
-                                            pub.state == 'offre')
-                                        .toList();
-                                    return SingleChildScrollView(
-                                      scrollDirection: Axis.horizontal,
-                                      child: Row(
-                                        children: filteredPubs.map((pub) {
-                                          print(pub);
-                                          return Padding(
-                                            padding: const EdgeInsets.symmetric(
-                                                horizontal: 5.0),
-                                            child: DealCard(
-                                              pub:
-                                                  pub, // Pass the pub to DealCard
-                                            ),
-                                          );
-                                        }).toList(),
-                                      ),
-                                    );
-                                  } else {
-                                    return Center(
-                                        child: Text('No places found'));
-                                  }
-                                },
-                              )
+                              Builder(builder: (BuildContext context) {
+                                return SingleChildScrollView(
+                                  scrollDirection: Axis.horizontal,
+                                  child: Row(
+                                    children: filteredPubs.map((pub) {
+                                      print(pub);
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 5.0),
+                                        child: DealCard(
+                                          pub: pub, // Pass the pub to DealCard
+                                        ),
+                                      );
+                                    }).toList(),
+                                  ),
+                                );
+                              }),
                             ],
                           ),
                         ),
