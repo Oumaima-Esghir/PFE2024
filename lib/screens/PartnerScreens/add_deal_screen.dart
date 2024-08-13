@@ -27,6 +27,7 @@ class _AddDealScreenState extends State<AddDealScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         actions: [
           GestureDetector(
             onTap: () {

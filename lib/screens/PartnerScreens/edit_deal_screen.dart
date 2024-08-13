@@ -27,6 +27,7 @@ class _EditDealScreenState extends State<EditDealScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         actions: [
           GestureDetector(
             onTap: () {

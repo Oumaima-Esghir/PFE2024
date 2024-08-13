@@ -20,6 +20,7 @@ class SignUpScreen extends StatefulWidget {
 }
 
 class _SignUpScreenState extends State<SignUpScreen> {
+  bool isLoading = false;
   bool _obscureText = true;
   //String? genderValue;
   int age = 20;
@@ -141,8 +142,23 @@ class _SignUpScreenState extends State<SignUpScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text("Sign Up Screen"),
-        backgroundColor: MyColors.PColor,
+        backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
+        actions: [
+          GestureDetector(
+            onTap: () {
+              loadingHandler(context);
+            },
+            child: Container(
+              margin: EdgeInsets.only(right: 330),
+              child: Image.asset(
+                'assets/images/arrowL.png',
+                width: 45.0,
+                height: 45.0,
+              ),
+            ),
+          ),
+        ],
       ),
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -650,5 +666,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
     // Regular expression for email validation
     final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     return emailRegex.hasMatch(email);
+  }
+
+  void loadingHandler(BuildContext context) {
+    setState(() {
+      isLoading = true;
+    });
+    Future.delayed(const Duration(seconds: 2)).then((value) {
+      setState(() {
+        isLoading = false;
+        Navigator.pushReplacement(
+          context,
+          CupertinoPageRoute(
+            builder: (_) => const SigninScreen(),
+          ),
+        );
+      });
+    });
   }
 }

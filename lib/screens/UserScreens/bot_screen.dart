@@ -19,6 +19,7 @@ class _BotScreenState extends State<BotScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         actions: [
           GestureDetector(
             onTap: () {

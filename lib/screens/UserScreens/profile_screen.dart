@@ -22,6 +22,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         leading: GestureDetector(
           onTap: () {
             loadingHandler1(context);

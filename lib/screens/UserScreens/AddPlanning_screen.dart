@@ -25,6 +25,7 @@ class _AddPlanningScreenState extends State<AddPlanningScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         actions: [
           GestureDetector(
             onTap: () {

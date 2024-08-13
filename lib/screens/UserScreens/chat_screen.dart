@@ -2,6 +2,8 @@ import 'package:dealdiscover/screens/UserScreens/bot_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_chat_ui/flutter_chat_ui.dart';
+import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -12,31 +14,39 @@ class ChatScreen extends StatefulWidget {
 
 class _ChatScreenState extends State<ChatScreen> {
   bool isLoading = false;
+  List<types.Message> _messages = [];
+  final _user = const types.User(
+    id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
+  );
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        actions: [
-          GestureDetector(
-            onTap: () {
-              loadingHandler(context);
-            },
-            child: Container(
-              margin: EdgeInsets.only(right: 330),
-              child: Image.asset(
-                'assets/images/arrowL.png',
-                width: 45.0,
-                height: 45.0,
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          automaticallyImplyLeading: false,
+          actions: [
+            GestureDetector(
+              onTap: () {
+                loadingHandler(context);
+              },
+              child: Container(
+                margin: EdgeInsets.only(right: 330),
+                child: Image.asset(
+                  'assets/images/arrowL.png',
+                  width: 45.0,
+                  height: 45.0,
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-      resizeToAvoidBottomInset: false,
-      body: Container(
+          ],
+        ),
+        resizeToAvoidBottomInset: false,
+        body: Chat(
+            messages: _messages, onSendPressed: _handleSendPressed, user: _user)
+
+        /*   Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
@@ -50,13 +60,7 @@ class _ChatScreenState extends State<ChatScreen> {
             padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
             child: Column(
               children: [
-                Container(
-                  width: 350,
-                  height: 700,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: []),
-                ),
+               
                 Container(
                   width: MediaQuery.of(context).size.width,
                   height: 500,
@@ -128,8 +132,25 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
         ),
-      ),
+      ),*/
+        );
+  }
+
+  void _handleSendPressed(types.PartialText message) {
+    final textMessage = types.TextMessage(
+      author: _user,
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+      id: "id",
+      text: message.text,
     );
+
+    _addMessage(textMessage);
+  }
+
+  void _addMessage(types.Message message) {
+    setState(() {
+      _messages.insert(0, message);
+    });
   }
 
   void loadingHandler(BuildContext context) {

@@ -1,3 +1,4 @@
+import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -25,12 +26,29 @@ class _CalendarScreenState extends State<CalendarScreen> {
     DateTime(2022, 4, 22): ['Event 4', 'Event 5', 'Event 6'],
   };*/
 
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
+        actions: [
+          GestureDetector(
+            onTap: () {
+              loadingHandler(context);
+            },
+            child: Container(
+              margin: EdgeInsets.only(right: 330),
+              child: Image.asset(
+                'assets/images/arrowL.png',
+                width: 45.0,
+                height: 45.0,
+              ),
+            ),
+          ),
+        ],
       ),
       body: Container(
         width: double.infinity,
@@ -115,6 +133,22 @@ class _CalendarScreenState extends State<CalendarScreen> {
     );
   }
 
+  void loadingHandler(BuildContext context) {
+    setState(() {
+      isLoading = true;
+    });
+    Future.delayed(const Duration(seconds: 2)).then((value) {
+      setState(() {
+        isLoading = false;
+        Navigator.pushReplacement(
+          context,
+          CupertinoPageRoute(
+            builder: (_) => const BottomNavBar(),
+          ),
+        );
+      });
+    });
+  }
   /*Widget _buildCalendar() {
     return Container(
       margin: EdgeInsets.all(16.0),

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:dealdiscover/client/client_service.dart';
 import 'package:dealdiscover/model/partenaire.dart';
 import 'package:dealdiscover/screens/PartnerScreens/deals_management_screen.dart';
+import 'package:dealdiscover/screens/UserScreens/signup_user_screen.dart';
 import 'package:dealdiscover/screens/authentication/signin_screen.dart';
 import 'package:dealdiscover/screens/menus/hidden_drawer.dart';
 import 'package:flutter/cupertino.dart';
@@ -20,8 +21,8 @@ class SignUpPartnerScreen extends StatefulWidget {
 }
 
 class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
+  bool isLoading = false;
   bool _obscureText = true;
-
   String _email = '';
   String? _emailError;
   final TextEditingController _nameController = TextEditingController();
@@ -139,8 +140,23 @@ class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        title: const Text("Partner Sign Up Screen"),
-        backgroundColor: MyColors.PColor,
+        backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
+        actions: [
+          GestureDetector(
+            onTap: () {
+              loadingHandler(context);
+            },
+            child: Container(
+              margin: EdgeInsets.only(right: 330),
+              child: Image.asset(
+                'assets/images/arrowL.png',
+                width: 45.0,
+                height: 45.0,
+              ),
+            ),
+          ),
+        ],
       ),
       resizeToAvoidBottomInset: false,
       body: Container(
@@ -433,5 +449,22 @@ class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
     // Regular expression for email validation
     final RegExp emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
     return emailRegex.hasMatch(email);
+  }
+
+  void loadingHandler(BuildContext context) {
+    setState(() {
+      isLoading = true;
+    });
+    Future.delayed(const Duration(seconds: 2)).then((value) {
+      setState(() {
+        isLoading = false;
+        Navigator.pushReplacement(
+          context,
+          CupertinoPageRoute(
+            builder: (_) => const SignUpScreen(),
+          ),
+        );
+      });
+    });
   }
 }

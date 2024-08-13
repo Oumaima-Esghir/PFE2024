@@ -1,4 +1,5 @@
 import 'package:dealdiscover/screens/UserScreens/accueil_screen.dart';
+import 'package:dealdiscover/screens/menus/hidden_drawer.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/material.dart';
 
@@ -15,14 +16,15 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'DealDiscover',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: MyColors.transparentColor),
-        useMaterial3: true,
-      ),
-      home: //AccueilScreen()
-          SplashScreen(),
-    );
+        debugShowCheckedModeBanner: false,
+        title: 'DealDiscover',
+        theme: ThemeData(
+          colorScheme:
+              ColorScheme.fromSeed(seedColor: MyColors.transparentColor),
+          useMaterial3: true,
+        ),
+        home:// HiddenDrawer()
+        SplashScreen(),
+        );
   }
 }

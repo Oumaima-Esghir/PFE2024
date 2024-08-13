@@ -40,12 +40,13 @@ class _GetStartBtnState extends State<GetStartBtn> {
         width: widget.size.width * 0.6,
         height: widget.size.height * 0.07,
         decoration: BoxDecoration(
-            color: MyColors.btnColor,
-           borderRadius: BorderRadius.circular(15),
-           border: Border.all(
+          color: MyColors.btnColor,
+          borderRadius: BorderRadius.circular(15),
+          border: Border.all(
             color: Colors.white,
             width: 5,
-          ),),
+          ),
+        ),
         child: Center(
           child: isLoading
               ? const Center(
@@ -79,7 +80,7 @@ class SkipBtn extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(top: 60),
+      margin: const EdgeInsets.only(top: 80),
       width: size.width * 0.6,
       height: size.height * 0.07,
       decoration: BoxDecoration(

@@ -1,4 +1,5 @@
 import 'package:dealdiscover/screens/PartnerScreens/profilepartner_screen.dart';
+import 'package:dealdiscover/screens/menus/hidden_drawer.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class _EditProfilePartnerScreenState extends State<EditProfilePartnerScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         actions: [
           GestureDetector(
             onTap: () {
@@ -465,7 +467,7 @@ class _EditProfilePartnerScreenState extends State<EditProfilePartnerScreen> {
         Navigator.pushReplacement(
           context,
           CupertinoPageRoute(
-            builder: (_) => const ProfileAsPartnerScreen(),
+            builder: (_) => const HiddenDrawer(),
           ),
         );
       });

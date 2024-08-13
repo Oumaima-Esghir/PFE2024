@@ -19,6 +19,7 @@ class _StatisticsPartnerScreenState extends State<StatisticsPartnerScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         actions: [
           GestureDetector(
             onTap: () {
@@ -57,7 +58,7 @@ class _StatisticsPartnerScreenState extends State<StatisticsPartnerScreen> {
     Future.delayed(const Duration(seconds: 2)).then((value) {
       setState(() {
         isLoading = false;
-        Navigator.pushReplacement(                  
+        Navigator.pushReplacement(
           context,
           CupertinoPageRoute(
             builder: (_) => const HiddenDrawer(),

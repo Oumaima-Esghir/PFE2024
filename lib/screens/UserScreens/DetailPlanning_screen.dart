@@ -26,6 +26,7 @@ class _DetailPlanningScreenState extends State<DetailPlanningScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         actions: [
           GestureDetector(
             onTap: () {
@@ -305,7 +306,7 @@ class _DetailPlanningScreenState extends State<DetailPlanningScreen> {
         Navigator.pushReplacement(
           context,
           CupertinoPageRoute(
-            builder: (_) => const CalendarScreen(),
+            builder: (_) => const BottomNavBar(),
           ),
         );
       });

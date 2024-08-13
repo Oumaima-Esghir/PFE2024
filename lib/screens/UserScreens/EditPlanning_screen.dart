@@ -25,6 +25,7 @@ class _EditPlanningScreenState extends State<EditPlanningScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         actions: [
           GestureDetector(
             onTap: () {
@@ -491,7 +492,7 @@ class _EditPlanningScreenState extends State<EditPlanningScreen> {
         Navigator.pushReplacement(
           context,
           CupertinoPageRoute(
-            builder: (_) => const CalendarScreen(),
+            builder: (_) => const BottomNavBar(),
           ),
         );
       });

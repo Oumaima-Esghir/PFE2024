@@ -33,6 +33,7 @@ class _SeeAllDealsScreenState extends State<SeeAllDealsScreen> {
       extendBodyBehindAppBar: true,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         actions: [
           GestureDetector(
             onTap: () {
