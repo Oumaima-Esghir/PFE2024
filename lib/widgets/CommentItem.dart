@@ -36,12 +36,12 @@ class _CommentItemState extends State<CommentItem> {
         ),
         title: Text(
           // Display username
-          'EyaAyyouta',
+          'Oumaima Esghir',
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
           // Display comment text
-          'This is a sample comment.',
+          'Nice Hotel!!',
         ),
       ),
     );

@@ -1,7 +1,9 @@
+import 'package:dealdiscover/model/pub.dart';
 import 'package:dealdiscover/screens/UserScreens/EditProfile_screen.dart';
 import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
 import 'package:dealdiscover/screens/authentication/signin_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
+import 'package:dealdiscover/widgets/DealCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +17,15 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   bool isLoading1 = false;
   bool isLoading2 = false;
+  List<Pub> filteredPubs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    filteredPubs = listOfIPubs
+        .where((pub) => pub.state != null && pub.state == 'offre')
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +39,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             loadingHandler1(context);
           },
           child: Container(
-            margin: EdgeInsets.only(left: 10), // Adjust margin as needed
+            margin: EdgeInsets.only(left: 10),
             child: Image.asset(
               'assets/images/arrowL.png',
               width: 45.0,
@@ -74,20 +85,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(
-                            90), // Adjust the radius as needed*/
-
-                        child: Image(
-                          image: AssetImage('assets/images/user_pic.png'),
+                        borderRadius: BorderRadius.circular(90),
+                        child: Image.asset(
+                          'assets/images/user_pic.png',
                           width: 180,
                           height: 180,
-
-                          fit: BoxFit.cover, // Adjust the fit as needed
+                          fit: BoxFit.cover,
                         ),
                       ),
                       SizedBox(height: 40),
                       Text(
-                        " Eya Ayyouta",
+                        "Oumaima Esghir",
                         style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -96,11 +104,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       SizedBox(height: 20),
                       Center(
                         child: SizedBox(
-                          height: 60, // Adjust height as needed
-                          width: 250, // Make button full width
+                          height: 60,
+                          width: 250,
                           child: TextButton(
                             onPressed: () {
-                              // Add your logic here
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -119,7 +126,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                   side: BorderSide(
                                     color: MyColors.backbtn1,
                                     width: 4,
-                                  ), // Add white border
+                                  ),
                                 ),
                               ),
                             ),
@@ -140,14 +147,39 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   width: MediaQuery.of(context).size.width,
                   height: 700,
                   child: Padding(
-                    padding: EdgeInsets.only(
-                        left: 20), // Adjust the left margin as needed
-                    child: Text(
-                      "Favories",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    padding: EdgeInsets.only(left: 20),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "Favories",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        // Display DealCard widgets here
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: filteredPubs.map((pub) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5.0),
+                                child: DealCard(
+                                  pub: pub,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

@@ -172,7 +172,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         ),
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
+            padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
             child: Column(
               children: [
                 Container(
@@ -202,7 +202,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  height: 1500,
+                  height: 1300,
                   child: Padding(
                     padding: const EdgeInsets.only(top: 0, bottom: 200),
                     child: Container(
@@ -219,7 +219,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          SizedBox(height: 10),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
@@ -364,7 +363,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 _emailError ?? '',
                                 style: TextStyle(color: Colors.red),
                               ),
-                              SizedBox(height: 20),
+
                               // Password label, input text, and visibility toggle button
                               Text(
                                 "Password",
@@ -424,7 +423,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   ),
                                 ),
                               ),
-                              SizedBox(height: 20),
+
                               /*
                               // Gender label
                               Text(
@@ -485,7 +484,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-                              SizedBox(height: 20),
+                              SizedBox(height: 10),
                               // Container with buttons and number display
                               Container(
                                 height: 60, // Adjust height as needed
@@ -563,7 +562,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 ),
                               ),
 
-                              SizedBox(height: 20),
+                              SizedBox(height: 30),
                               // Sign Up button
                               Center(
                                 child: SizedBox(

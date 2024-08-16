@@ -165,6 +165,30 @@ class Pub {
 List<Pub> listOfIPubs = [
   Pub(
     id: "1",
+    rating: 4,
+    title: "El Mouradi Mahdia",
+    address: "Mahdia",
+    description: "Promo!!",
+    pubImage: "assets/images/MouradiMahdia.jpg",
+    category: "hotel",
+    state: "offre",
+   // duree: "3j",
+   // pourcentage: 30,
+  ),
+  Pub(
+    id: "2",
+    rating: 4,
+    title: "El Mouradi Mahdia",
+    address: "Mahdia",
+    description: "Promo!!",
+    pubImage: "assets/images/MouradiMahdia.jpg",
+    category: "hotel",
+    state: "offre",
+    //duree: "3j",
+    //pourcentage: 30,
+  ),
+  Pub(
+    id: "3",
     rating: 4.5,
     title: "LA CANTINE",
     address: "Sousse",
@@ -176,7 +200,7 @@ List<Pub> listOfIPubs = [
     pourcentage: 50,
   ),
   Pub(
-    id: "2",
+    id: "4",
     rating: 4.3,
     title: "Café Sidi Salem La Grotte",
     address: "Mahdia",
@@ -188,7 +212,7 @@ List<Pub> listOfIPubs = [
     pourcentage: 50,
   ),
   Pub(
-    id: "3",
+    id: "5",
     rating: 5,
     title: "Marina Cap Monastir- Appart'Hôtel",
     address: "hotel",
@@ -201,7 +225,7 @@ List<Pub> listOfIPubs = [
     //pourcentage: 20,
   ),
   Pub(
-    id: "4",
+    id: "6",
     rating: 4.3,
     title: "El Jem Amphitheater",
     address: "ElJem",
@@ -214,7 +238,7 @@ List<Pub> listOfIPubs = [
     //pourcentage: 20,
   ),
   Pub(
-    id: "5",
+    id: "7",
     rating: 4,
     title: "Hergla",
     address: "Hergla",
@@ -227,7 +251,7 @@ List<Pub> listOfIPubs = [
     //pourcentage: 50,
   ),
   Pub(
-    id: "6",
+    id: "8",
     rating: 5,
     title: "Sousse Palace Hotel & Spa",
     address: "Sousse",
@@ -240,7 +264,7 @@ List<Pub> listOfIPubs = [
     pourcentage: 20,
   ),
   Pub(
-    id: "7",
+    id: "9",
     rating: 4,
     title: "El Mouradi Mahdia",
     address: "Mahdia",
@@ -252,9 +276,9 @@ List<Pub> listOfIPubs = [
     pourcentage: 30,
   ),
   Pub(
-    id: "8",
+    id: "10",
     rating: 5,
-    title: "le prirate",
+    title: "le pirate",
     address: "Monastir",
     description: "Promo sur tous les plats!!",
     pubImage: "assets/images/lepirate.jpg",
@@ -264,7 +288,7 @@ List<Pub> listOfIPubs = [
     pourcentage: 25,
   ),
   Pub(
-    id: "9",
+    id: "11",
     rating: 6,
     title: "BRUCHETTA",
     address: "Sousse",
@@ -276,7 +300,7 @@ List<Pub> listOfIPubs = [
     pourcentage: 30,
   ),
   Pub(
-    id: "10",
+    id: "12",
     rating: 6.5,
     title: "Hotel Les Palmiers",
     address: "Monastir",

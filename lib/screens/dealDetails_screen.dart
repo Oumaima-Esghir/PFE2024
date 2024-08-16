@@ -220,7 +220,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
               children: [
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  height: 1200,
+                  height: 850,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -423,7 +423,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                             ListView.separated(
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
-                              itemCount: 3,
+                              itemCount: 1,
                               separatorBuilder: (context, index) {
                                 // Add space between comments
                                 return SizedBox(

@@ -3,10 +3,7 @@ import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:dealdiscover/widgets/PlanningItem.dart' as PlanningItemWidget;
-import 'package:flutter/widgets.dart';
 import 'package:table_calendar/table_calendar.dart';
-
-import 'package:intl/intl.dart';
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({Key? key}) : super(key: key);
@@ -16,17 +13,11 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  // final String title = 'Calendar';
-
-  // DateTime _currentDate = DateTime.now();
-
-/*  Map<DateTime, List<String>> _events = {
-    DateTime(2022, 4, 20): ['Event 1', 'Event 2'],
-    DateTime(2022, 4, 21): ['Event 3'],
-    DateTime(2022, 4, 22): ['Event 4', 'Event 5', 'Event 6'],
-  };*/
-
   bool isLoading = false;
+
+  DateTime _focusedDay = DateTime.now();
+  DateTime? _selectedDay;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -59,33 +50,45 @@ class _CalendarScreenState extends State<CalendarScreen> {
             fit: BoxFit.fill,
           ),
         ),
-        //  child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
           child: Column(
             children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 100,
-                child: const Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    /*Container(
-              margin: EdgeInsets.all(16.0),
-              child: Text(
-                'Events for ${DateFormat('MMMM yyyy').format(_currentDate)}',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20.0,
-                ),
-              ),
-            ),*/
-                    //  _buildCalendar(),
-                  ],
+              Expanded(
+                child: TableCalendar(
+                  firstDay: DateTime.utc(2020, 1, 1),
+                  lastDay: DateTime.utc(2030, 12, 31),
+                  focusedDay: _focusedDay,
+                  selectedDayPredicate: (day) {
+                    return isSameDay(_selectedDay, day);
+                  },
+                  onDaySelected: (selectedDay, focusedDay) {
+                    setState(() {
+                      _selectedDay = selectedDay;
+                      _focusedDay =
+                          focusedDay; // update `_focusedDay` here as well
+                    });
+                  },
+                  calendarFormat: CalendarFormat.month,
+                  startingDayOfWeek: StartingDayOfWeek.monday,
+                  headerStyle: HeaderStyle(
+                    formatButtonVisible: false,
+                    titleCentered: true,
+                  ),
+                  calendarStyle: CalendarStyle(
+                    selectedDecoration: BoxDecoration(
+                      color: MyColors.btnColor,
+                      shape: BoxShape.circle,
+                    ),
+                    todayDecoration: BoxDecoration(
+                      color: MyColors.btnColor.withOpacity(0.5),
+                      shape: BoxShape.circle,
+                    ),
+                  ),
                 ),
               ),
               Expanded(
+                flex: 1,
                 child: Container(
                   width: MediaQuery.of(context).size.width,
                   height: MediaQuery.of(context).size.height,
@@ -103,22 +106,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                         color: Colors.white,
                       ),
                       child: ListView(
-                        // crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          SingleChildScrollView(
-                            scrollDirection: Axis.vertical,
-                            child: Column(
-                              children: [
-                                PlanningItemWidget.PlanningItem(),
-                                SizedBox(height: 20),
-                                PlanningItemWidget.PlanningItem(),
-                                SizedBox(height: 20),
-                                PlanningItemWidget.PlanningItem(),
-                                SizedBox(height: 20),
-                                PlanningItemWidget.PlanningItem(),
-                              ],
-                            ),
-                          ),
+                          PlanningItemWidget.PlanningItem(),
+                          SizedBox(height: 40),
+                          PlanningItemWidget.PlanningItem(),
+                          SizedBox(height: 20),
+                          PlanningItemWidget.PlanningItem(),
+                          SizedBox(height: 20),
+                          PlanningItemWidget.PlanningItem(),
                         ],
                       ),
                     ),
@@ -129,7 +124,6 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
         ),
       ),
-      // ),
     );
   }
 
@@ -149,35 +143,4 @@ class _CalendarScreenState extends State<CalendarScreen> {
       });
     });
   }
-  /*Widget _buildCalendar() {
-    return Container(
-      margin: EdgeInsets.all(16.0),
-      child: TableCalendar(
-        firstDay: DateTime(2022, 4, 1),
-        lastDay: DateTime(2022, 4, 30),
-        focusedDay: _currentDate,
-        eventLoader: (day) => _events[day] ?? [],
-        headerStyle: HeaderStyle(
-          formatButtonVisible: false,
-        ),
-        calendarStyle: CalendarStyle(
-          todayDecoration: BoxDecoration(
-            color: Colors.blue.withOpacity(0.5),
-            shape: BoxShape.circle,
-          ),
-          selectedDecoration: BoxDecoration(
-            color: Colors.blue,
-            shape: BoxShape.circle,
-          ),
-          // This is where you integrate the customization
-         // markersPositionBottom: true,
-        ),
-        onDaySelected: (selectedDay, focusedDay) {
-          setState(() {
-            _currentDate = selectedDay;
-          });
-        },
-      ),
-    );
-  }*/
 }

@@ -66,12 +66,12 @@ class _SeeAllDealsScreenState extends State<SeeAllPromotionsScreen> {
             padding: EdgeInsets.all(8),
             child: Column(
               children: [
-                SizedBox(height: 110),
+                SizedBox(height: 80),
                 Container(
                   width: double
                       .infinity, // Ensures the text takes the full width of the container
                   child: Text(
-                    'Top Promotions',
+                    'All Promotions',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
@@ -80,7 +80,7 @@ class _SeeAllDealsScreenState extends State<SeeAllPromotionsScreen> {
                   ),
                 ),
                 SizedBox(
-                  height: 40,
+                  height: 15,
                 ),
                 Builder(builder: (BuildContext context) {
                   return SingleChildScrollView(

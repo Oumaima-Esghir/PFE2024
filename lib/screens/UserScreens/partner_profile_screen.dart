@@ -1,6 +1,7 @@
 import 'package:dealdiscover/model/pub.dart';
 import 'package:dealdiscover/screens/dealDetails_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
+import 'package:dealdiscover/widgets/DealCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -15,6 +16,15 @@ class PartnerProfileScreen extends StatefulWidget {
 
 class _PartnerProfileScreenState extends State<PartnerProfileScreen> {
   bool isLoading1 = false;
+  List<Pub> filteredPubs = [];
+
+  @override
+  void initState() {
+    super.initState();
+    filteredPubs = listOfIPubs
+        .where((pub) => pub.state != null && pub.state == 'offre')
+        .toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -190,12 +200,38 @@ class _PartnerProfileScreenState extends State<PartnerProfileScreen> {
                   child: Padding(
                     padding: EdgeInsets.only(
                         left: 20), // Adjust the left margin as needed
-                    child: Text(
-                      "Posts",
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Text(
+                              "Posts",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            SizedBox(width: 10),
+                          ],
+                        ),
+                        SizedBox(height: 20),
+                        // Display DealCard widgets here
+                        SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: Row(
+                            children: filteredPubs.map((pub) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 5.0),
+                                child: DealCard(
+                                  pub: pub,
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),

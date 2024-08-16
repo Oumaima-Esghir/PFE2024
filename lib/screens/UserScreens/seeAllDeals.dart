@@ -66,7 +66,7 @@ class _SeeAllDealsScreenState extends State<SeeAllDealsScreen> {
             padding: EdgeInsets.all(8),
             child: Column(
               children: [
-                SizedBox(height: 110),
+                SizedBox(height: 120),
                 Container(
                   width: double
                       .infinity, // Ensures the text takes the full width of the container
@@ -80,7 +80,7 @@ class _SeeAllDealsScreenState extends State<SeeAllDealsScreen> {
                   ),
                 ),
                 SizedBox(
-                  height: 40,
+                  height: 20,
                 ),
                 Builder(builder: (BuildContext context) {
                   return SingleChildScrollView(

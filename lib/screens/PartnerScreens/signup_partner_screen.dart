@@ -170,7 +170,7 @@ class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
         ),
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
+            padding: const EdgeInsets.fromLTRB(0, 45, 0, 0),
             child: Column(
               children: [
                 Container(
@@ -200,7 +200,7 @@ class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  height: 1500,
+                  height: 970,
                   child: Padding(
                     padding: const EdgeInsets.only(top: 0, bottom: 200),
                     child: Container(
@@ -284,7 +284,7 @@ class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
                                 _emailError ?? '',
                                 style: TextStyle(color: Colors.red),
                               ),
-                              SizedBox(height: 20),
+
                               // Password label, input text, and visibility toggle button
                               Text(
                                 "Password",

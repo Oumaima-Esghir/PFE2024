@@ -56,12 +56,12 @@ class _EditProfilePartnerScreenState extends State<EditProfilePartnerScreen> {
         ),
         child: SingleChildScrollView(
             child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
+          padding: const EdgeInsets.fromLTRB(0, 110, 0, 0),
           child: Column(
             children: [
               Container(
                 width: 350,
-                height: 900,
+                height: 700,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
@@ -69,6 +69,9 @@ class _EditProfilePartnerScreenState extends State<EditProfilePartnerScreen> {
                       'assets/images/addP.png',
                       width: 100,
                       height: 100,
+                    ),
+                    SizedBox(
+                      height: 40,
                     ),
                     Text(
                       "Partner Name",
@@ -78,7 +81,7 @@ class _EditProfilePartnerScreenState extends State<EditProfilePartnerScreen> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 30),
+                    SizedBox(height: 10),
                     SizedBox(
                       width: 350, // Adjust width as needed
                       height: 55, // Adjust height as needed
@@ -385,7 +388,7 @@ class _EditProfilePartnerScreenState extends State<EditProfilePartnerScreen> {
                 height: 80,
                 child: Padding(
                   padding: EdgeInsets.only(
-                    left: 20,
+                    left: 5,
                   ),
                   // Adjust the left margin as needed
                   child: Center(

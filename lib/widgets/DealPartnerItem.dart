@@ -30,7 +30,7 @@ class _DealPartnerItemState extends State<DealPartnerItem> {
               children: [
                 Expanded(
                   child: Text(
-                    'The Secret Coffee Shop',
+                    'BRUCHETTA',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 14,

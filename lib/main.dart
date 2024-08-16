@@ -16,15 +16,14 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'DealDiscover',
-        theme: ThemeData(
-          colorScheme:
-              ColorScheme.fromSeed(seedColor: MyColors.transparentColor),
-          useMaterial3: true,
-        ),
-        home:// HiddenDrawer()
-        SplashScreen(),
-        );
+      debugShowCheckedModeBanner: false,
+      title: 'DealDiscover',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: MyColors.transparentColor),
+        useMaterial3: true,
+      ),
+      home:  HiddenDrawer()
+          //SplashScreen(),
+    );
   }
 }

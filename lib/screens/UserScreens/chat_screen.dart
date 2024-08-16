@@ -15,38 +15,43 @@ class ChatScreen extends StatefulWidget {
 class _ChatScreenState extends State<ChatScreen> {
   bool isLoading = false;
   List<types.Message> _messages = [];
+
   final _user = const types.User(
     id: '82091008-a484-4a89-ae75-a22bf8d6f3ac',
   );
 
+  final _chatbot = const types.User(
+    id: 'Dedi-bot', // Unique ID for the chatbot
+    firstName: 'Dedi', // Name of the chatbot
+  );
+
+  final TextEditingController _controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          automaticallyImplyLeading: false,
-          actions: [
-            GestureDetector(
-              onTap: () {
-                loadingHandler(context);
-              },
-              child: Container(
-                margin: EdgeInsets.only(right: 330),
-                child: Image.asset(
-                  'assets/images/arrowL.png',
-                  width: 45.0,
-                  height: 45.0,
-                ),
+      extendBodyBehindAppBar: true,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
+        actions: [
+          GestureDetector(
+            onTap: () {
+              loadingHandler(context);
+            },
+            child: Container(
+              margin: EdgeInsets.only(right: 330),
+              child: Image.asset(
+                'assets/images/arrowL.png',
+                width: 45.0,
+                height: 45.0,
               ),
             ),
-          ],
-        ),
-        resizeToAvoidBottomInset: false,
-        body: Chat(
-            messages: _messages, onSendPressed: _handleSendPressed, user: _user)
-
-        /*   Container(
+          ),
+        ],
+      ),
+      resizeToAvoidBottomInset: true,
+      body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
@@ -55,96 +60,188 @@ class _ChatScreenState extends State<ChatScreen> {
             fit: BoxFit.fill,
           ),
         ),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
-            child: Column(
-              children: [
-               
-                Container(
-                  width: MediaQuery.of(context).size.width,
-                  height: 500,
-                  child: Padding(
-                    padding: EdgeInsets.only(
-                      left: 10,
-                      right: 10,
+        child: Column(
+          children: [
+            Expanded(
+              child: Chat(
+                messages: _messages,
+                onSendPressed: (types.PartialText message) {},
+                user: _user,
+                showUserAvatars: true,
+                showUserNames: true,
+                avatarBuilder: (user) {
+                  if (user.id == _chatbot.id) {
+                    return _buildChatbotAvatar();
+                  } else {
+                    return Container(
+                      width: 50,
+                      height: 50,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.white, // Default color
+                      ),
+                    );
+                  }
+                },
+                customBottomWidget: _buildInput(),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildInput() {
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: _controller,
+              decoration: InputDecoration(
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 25, horizontal: 25),
+                hintText: "Write a message",
+                filled: true,
+                fillColor: MyColors.backbtn1,
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: MyColors.btnColor,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(
+                    color: MyColors.btnBorderColor,
+                    width: 2,
+                  ),
+                  borderRadius: BorderRadius.circular(50),
+                ),
+                suffixIcon: Container(
+                  margin: EdgeInsets.only(right: 7),
+                  width: 60,
+                  height: 60,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: Colors.transparent,
+                    border: Border.all(
+                      color: MyColors.btnColor,
+                      width: 2,
                     ),
-                    // Adjust the left margin as needed
-                    child: Center(
-                      child: TextField(
-                        decoration: InputDecoration(
-                          contentPadding: EdgeInsets.symmetric(
-                              vertical: 25,
-                              horizontal: 25), // Adjust padding as needed
-                          hintText: "Write a message",
-                          filled: true,
-                          fillColor: MyColors.backbtn1,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: MyColors.btnColor, // Adjust border color
-                              width: 2, // Adjust border width
-                            ),
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: MyColors
-                                  .btnBorderColor, // Adjust border color
-                              width: 2, // Adjust border width
-                            ),
-                            borderRadius: BorderRadius.circular(50),
-                          ),
-                          suffixIcon: Container(
-                            margin: EdgeInsets.only(right: 7),
-                            width: 60, // Adjust the size of the circular button
-                            height: 60,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors
-                                  .transparent, // Set color as transparent to show the border
-                              border: Border.all(
-                                color: MyColors.btnColor, // Set border color
-                                width: 2, // Adjust border width as needed
-                              ),
-                            ),
-                            child: ClipOval(
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () {
-                                    // Add your logic here for button press
-                                  },
-                                  child: Image.asset(
-                                    'assets/images/send.png',
-                                    width: 25,
-                                    height: 25,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
+                  ),
+                  child: ClipOval(
+                    child: Material(
+                      color: Colors.transparent,
+                      child: InkWell(
+                        onTap: () {
+                          final text = _controller.text;
+                          if (text.isNotEmpty) {
+                            _handleSendPressed(text);
+                            _controller.clear();
+                          }
+                        },
+                        child: Image.asset(
+                          'assets/images/send.png',
+                          width: 25,
+                          height: 25,
                         ),
                       ),
                     ),
                   ),
                 ),
-              ],
+              ),
             ),
           ),
-        ),
-      ),*/
-        );
+        ],
+      ),
+    );
   }
 
-  void _handleSendPressed(types.PartialText message) {
+  Widget _buildChatbotAvatar() {
+    return Container(
+      width: 70,
+      height: 70,
+      decoration: BoxDecoration(
+        shape: BoxShape.circle,
+        color: MyColors.grey,
+        border: Border.all(
+          color: MyColors.btnColor,
+          width: 3,
+        ),
+      ),
+      child: Image.asset(
+        'assets/images/dedi_avatar.png',
+        width: 24,
+        height: 24,
+      ),
+    );
+  }
+
+  Widget _buildMessage(types.Message message) {
+    if (message.author.id == _user.id) {
+      return Align(
+        alignment: Alignment.centerRight,
+        child: Container(
+          padding: const EdgeInsets.all(8.0),
+          margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+          decoration: BoxDecoration(
+            color: Colors.blueAccent, // User message background color
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: Text(
+            (message as types.TextMessage).text,
+            style: const TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+    } else if (message.author.id == _chatbot.id) {
+      return Align(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          padding: const EdgeInsets.all(8.0),
+          margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
+          decoration: BoxDecoration(
+            color: Colors.grey[300], // Chatbot message background color
+            borderRadius: BorderRadius.circular(12.0),
+          ),
+          child: Text(
+            (message as types.TextMessage).text,
+            style: const TextStyle(color: Colors.black),
+          ),
+        ),
+      );
+    }
+    return Container(); // Return an empty container for unknown message types
+  }
+
+  void _handleSendPressed(String text) {
     final textMessage = types.TextMessage(
       author: _user,
       createdAt: DateTime.now().millisecondsSinceEpoch,
-      id: "id",
-      text: message.text,
+      id: DateTime.now().toIso8601String(),
+      text: text,
     );
 
     _addMessage(textMessage);
+
+    // Simulate a response from the chatbot after a short delay
+    Future.delayed(const Duration(seconds: 1), () {
+      _simulateChatbotResponse();
+    });
+  }
+
+  void _simulateChatbotResponse() {
+    final botMessage = types.TextMessage(
+      author: _chatbot,
+      createdAt: DateTime.now().millisecondsSinceEpoch,
+      id: DateTime.now().toIso8601String(),
+      text: 'Hello! I am Dedi, how can I assist you today?', // Example response
+    );
+
+    _addMessage(botMessage);
   }
 
   void _addMessage(types.Message message) {

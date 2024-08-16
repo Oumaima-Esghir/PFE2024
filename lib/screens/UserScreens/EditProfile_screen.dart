@@ -54,7 +54,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
         child: SingleChildScrollView(
             child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
+          padding: const EdgeInsets.fromLTRB(0, 10, 0, 0),
           child: Column(
             children: [
               Container(
@@ -65,8 +65,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   children: [
                     Image.asset(
                       'assets/images/addP.png',
-                      width: 200,
-                      height: 200,
+                      width: 150,
+                      height: 150,
                     ),
                     Text(
                       "User Name",
@@ -380,10 +380,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               Container(
                 width: MediaQuery.of(context).size.width,
-                height: 80,
+                height: 60,
                 child: Padding(
                   padding: EdgeInsets.only(
-                    left: 20,
+                    left: 5,
                   ),
                   // Adjust the left margin as needed
                   child: Center(

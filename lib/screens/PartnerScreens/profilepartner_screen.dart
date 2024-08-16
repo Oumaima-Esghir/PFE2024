@@ -78,7 +78,7 @@ class _ProfileAsPartnerScreenState extends State<ProfileAsPartnerScreen> {
                             90), // Adjust the radius as needed*/
 
                         child: Image(
-                          image: AssetImage('assets/images/vitrine1.png'),
+                          image: AssetImage('assets/images/bruscetta.jpg'),
                           width: 180,
                           height: 180,
 
@@ -87,7 +87,7 @@ class _ProfileAsPartnerScreenState extends State<ProfileAsPartnerScreen> {
                       ),
                       SizedBox(height: 40),
                       Text(
-                        "The Secret Coffe Shop",
+                        "BRUCHETTA",
                         style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -144,7 +144,7 @@ class _ProfileAsPartnerScreenState extends State<ProfileAsPartnerScreen> {
                     padding: EdgeInsets.only(
                         left: 20), // Adjust the left margin as needed
                     child: Text(
-                      "My Deals",
+                      "",
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
