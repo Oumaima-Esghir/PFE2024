@@ -22,8 +22,8 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: MyColors.transparentColor),
         useMaterial3: true,
       ),
-      home:  HiddenDrawer()
-          //SplashScreen(),
+      home:  //HiddenDrawer()
+          SplashScreen(),
     );
   }
 }

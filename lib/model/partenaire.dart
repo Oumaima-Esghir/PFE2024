@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 class Partenaire {
   int? partenaire_id;
   String name;
-  String image;
+  String? image;
   String email;
   String password;
   String adress;
@@ -14,7 +14,7 @@ class Partenaire {
   Partenaire({
     required this.partenaire_id,
     required this.name,
-    required this.image,
+    this.image,
     required this.email,
     required this.password,
     required this.adress,

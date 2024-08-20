@@ -95,13 +95,24 @@ class ClientService extends Client {
 //PartnerSignin
   Future<http.Response> partnersignin(String email, String password) async {
     final url = Uri.parse('$baseUrl/partenaires/signin');
+
+    print('URL: $url');
+
     final headers = {'Content-Type': 'application/json'};
+
+    print('Headers: $headers');
+
     final body = json.encode({
       'email': email,
       'password': password,
     });
 
+    print('Body: $body');
+
     final response = await http.post(url, headers: headers, body: body);
+
+    print('Response status: ${response.statusCode}');
+    print('Response body: ${response.body}');
 
     return response;
   }

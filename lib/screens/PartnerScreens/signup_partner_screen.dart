@@ -84,12 +84,12 @@ class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
         String message =
             responseData['message']; // Extract message from the response
         if (message == "Partner successfully created!") {
-          String partenaireId = responseData['partenaire']
+          String partenaire_id = responseData['partenaire']
               ['id']; // Extract user ID from the response
           String token = responseData['partenaire']
               ['token']; // Extract token from the response
 
-          await storeUserInfo(partenaireId, _nameController.text, token);
+          await storeUserInfo(partenaire_id, _nameController.text, token);
 
           Navigator.pushReplacement(
             context,
@@ -128,9 +128,9 @@ class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
   }
 
   Future<void> storeUserInfo(
-      String partenaireId, String name, String token) async {
+      String partenaire_id, String name, String token) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('partenaireId', partenaireId);
+    await prefs.setString('partenaire_id', partenaire_id);
     await prefs.setString('name', name);
     await prefs.setString('token', token); // Store the token as well
   }
@@ -200,7 +200,7 @@ class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  height: 970,
+                  height: 1100,
                   child: Padding(
                     padding: const EdgeInsets.only(top: 0, bottom: 200),
                     child: Container(

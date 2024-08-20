@@ -368,9 +368,11 @@ class _SigninScreenState extends State<SigninScreen> {
       ClientService clientService = ClientService();
       http.Response response;
 
-      if (_selectedUserType == 'user') {
-        response = await clientService.signinuser(email, password);
-      } else {
+      // First, attempt user sign-in
+      response = await clientService.signinuser(email, password);
+
+      if (response.statusCode == 404) {
+        // If user not found, try partner sign-in
         response = await clientService.partnersignin(email, password);
       }
 
@@ -387,7 +389,8 @@ class _SigninScreenState extends State<SigninScreen> {
             user['roles'] != null) {
           String token = user['token'];
           List<dynamic> roles = user['roles'];
-          String userType = roles.contains('partenaire') ? 'partner' : 'user';
+          String userType =
+              roles.contains('partenaire') ? 'partenaire' : 'user';
 
           print("Token: $token");
           print("User Type: $userType");
@@ -404,7 +407,7 @@ class _SigninScreenState extends State<SigninScreen> {
             );
           });
 
-          if (userType == 'partner') {
+          if (userType == 'partenaire') {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) => HiddenDrawer()),
