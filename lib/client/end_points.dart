@@ -1,13 +1,17 @@
 abstract class EndPoints {
-  static const String getPubs = "/pubs/";
-
+  
+//user
   static const String signupuser = "/users/signup";
   static const String signinuser = "/users/signin";
 
+//partenaire
   static const String partnersignup = "/partenaires/signup";
   static const String partnersignin = "/partenaires/signin";
 
-  static const String places = "/place/page";
+//pubs
+  static const String getPubs = "/pubs";
+
+  
 
   static const String createcomment = "/comments";
   static const String deletecomment = "/comments/:id";

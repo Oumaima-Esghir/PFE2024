@@ -19,13 +19,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isLoading2 = false;
   List<Pub> filteredPubs = [];
 
-  @override
+ /* @override
   void initState() {
     super.initState();
     filteredPubs = listOfIPubs
         .where((pub) => pub.state != null && pub.state == 'offre')
         .toList();
-  }
+  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -165,7 +165,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         SizedBox(height: 20),
                         // Display DealCard widgets here
-                        SingleChildScrollView(
+                     /*   SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: filteredPubs.map((pub) {
@@ -178,7 +178,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               );
                             }).toList(),
                           ),
-                        ),
+                        ),*/
                       ],
                     ),
                   ),

@@ -14,25 +14,26 @@ class ClientService extends Client {
     return this;
   }
 
-  //getPubs
-  // Future<List<Pub>> getPubs() async {
-  //   final url =
-  //       Uri.parse('$baseUrl/pubs/'); // Replace with your actual endpoint
+  Future<List<Pub>> getPubs() async {
+    final url = Uri.parse('$baseUrl/pubs'); // Replace with your actual endpoint
 
-  //   final response = await http.get(url);
+    final response = await http.get(url);
 
-  //   if (response.statusCode == 200) {
-  //     print("yes");
-  //     final data = json.decode(response.body) as Map<String, dynamic>;
-  //     print(data);
-  //     final pubsJson = data['data'] as List;
-  //     List<Pub> x = pubsJson.map((pub) => Pub.fromMap(pub)).toList();
-  //     print("zzzz" + x.toString());
-  //     return pubsJson.map((pub) => Pub.fromMap(pub)).toList();
-  //   } else {
-  //     throw Exception('Failed to load pubs');
-  //   }
-  // }
+    if (response.statusCode == 200) {
+      print("yes");
+      // Decode the response as a list of dynamic objects
+      final List<dynamic> data = json.decode(response.body);
+
+      // Map each item in the list to a Pub object
+      List<Pub> pubs =
+          data.map((pub) => Pub.fromMap(pub as Map<String, dynamic>)).toList();
+
+      print("zzzz" + pubs.toString());
+      return pubs;
+    } else {
+      throw Exception('Failed to load pubs');
+    }
+  }
 
   /*Future<http.Response> register(User user) {
     return post(EndPoints.register, body: user.toMap());

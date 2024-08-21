@@ -1,3 +1,4 @@
+import 'package:dealdiscover/client/client_service.dart';
 import 'package:dealdiscover/model/pub.dart';
 import 'package:dealdiscover/screens/UserScreens/accueil_screen.dart';
 import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
@@ -15,16 +16,15 @@ class SeeAllDealsScreen extends StatefulWidget {
 
 class _SeeAllDealsScreenState extends State<SeeAllDealsScreen> {
   bool isLoading = false;
-  List<Pub> PromoPubs = [];
+  late Future<List<Pub>>? futurePubs;
+ late Future<List<Pub>>? DealsPubs;
+ ClientService clientService = ClientService();
 
   @override
   void initState() {
     super.initState();
-    PromoPubs = listOfIPubs
-        .where((pub) => pub.state != null && pub.state == 'offre')
-        .toList();
-    // futurePubs = clientService.getPubs();
-    // print("zz" + futurePubs.toString());
+    futurePubs = clientService.getPubs();
+    DealsPubs = futurePubs?.then((pubs) => pubs.where((pub) => pub.state == 'offre').toList());
   }
 
   @override
@@ -82,24 +82,34 @@ class _SeeAllDealsScreenState extends State<SeeAllDealsScreen> {
                 SizedBox(
                   height: 20,
                 ),
-                Builder(builder: (BuildContext context) {
-                  return SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Column(
-                      children: PromoPubs.map((pub) {
-                        print(pub);
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                          child: PromoCard(
-                            pub: pub, // Pass the pub to DealCard
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  );
-                }),
+                  FutureBuilder<List<Pub>>(
+                  future: DealsPubs,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else if (snapshot.hasData) {
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: snapshot.data!.map((pub) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                              child: PromoCard(
+                                pub: pub,
+                              ),
+                            );
+                          }).toList(),
+                        ),
+                      );
+                      } else {
+                      return Text('No deals available');
+                    }
+                  },
+                ),
               ],
-            ),
+      ),
           ),
         ),
       ),

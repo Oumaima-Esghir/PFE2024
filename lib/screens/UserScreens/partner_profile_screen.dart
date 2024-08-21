@@ -16,16 +16,15 @@ class PartnerProfileScreen extends StatefulWidget {
 
 class _PartnerProfileScreenState extends State<PartnerProfileScreen> {
   bool isLoading1 = false;
-  List<Pub> filteredPubs = [];
+  //List<Pub> futurePubs = [];
 
-  @override
+    @override
   void initState() {
     super.initState();
-    filteredPubs = listOfIPubs
-        .where((pub) => pub.state != null && pub.state == 'offre')
-        .toList();
+    /*filteredPubs = listOfIPubs
+        .where((pub) => pub.state != null && (pub.state == 'offre' || pub.state == 'promo'))
+        .toList();*/
   }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -217,7 +216,7 @@ class _PartnerProfileScreenState extends State<PartnerProfileScreen> {
                         ),
                         SizedBox(height: 20),
                         // Display DealCard widgets here
-                        SingleChildScrollView(
+                       /* SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: filteredPubs.map((pub) {
@@ -230,7 +229,7 @@ class _PartnerProfileScreenState extends State<PartnerProfileScreen> {
                               );
                             }).toList(),
                           ),
-                        ),
+                        ),*/
                       ],
                     ),
                   ),

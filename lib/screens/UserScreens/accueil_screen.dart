@@ -19,22 +19,19 @@ class AccueilScreen extends StatefulWidget {
 }
 
 class _AccueilScreenState extends State<AccueilScreen> {
-  // late Future<List<Pub>>? futurePubs;
-  // ClientService clientService = ClientService();
-  List<Pub> filteredPubs = [];
-  List<Pub> PromoPubs = [];
+  late Future<List<Pub>>? futurePubs;
+  late Future<List<Pub>>? bestDealsPubs;
+  late Future<List<Pub>>? topPromotionsPubs;
+  ClientService clientService = ClientService();
+  //List<Pub> filteredPubs = [];
+  //List<Pub> PromoPubs = [];
 
   @override
-  void initState() {
+   void initState() {
     super.initState();
-    filteredPubs = listOfIPubs
-        .where((pub) => pub.state != null && pub.state == 'offre')
-        .toList();
-    PromoPubs = listOfIPubs
-        .where((pub) => pub.state != null && pub.state == 'promo')
-        .toList();
-    // futurePubs = clientService.getPubs();
-    // print("zz" + futurePubs.toString());
+    futurePubs = clientService.getPubs();
+    bestDealsPubs = futurePubs?.then((pubs) => pubs.where((pub) => pub.state == 'offre').toList());
+    topPromotionsPubs = futurePubs?.then((pubs) => pubs.where((pub) => pub.state == 'promo').toList());
   }
 
   bool isLoading = false;
@@ -169,32 +166,34 @@ class _AccueilScreenState extends State<AccueilScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 20),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Row(
-                            children: [
-                              Builder(builder: (BuildContext context) {
-                                return SingleChildScrollView(
-                                  scrollDirection: Axis.horizontal,
-                                  child: Row(
-                                    children: filteredPubs.map((pub) {
-                                      print(pub);
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 5.0),
-                                        child: DealCard(
-                                          pub: pub, // Pass the pub to DealCard
-                                        ),
-                                      );
-                                    }).toList(),
-                                  ),
-                                );
-                              }),
-                            ],
-                          ),
+                       SizedBox(height: 20),
+                FutureBuilder<List<Pub>>(
+                  future: bestDealsPubs,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else if (snapshot.hasData) {
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: snapshot.data!.map((pub) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                              child: DealCard(
+                                pub: pub,
+                              ),
+                            );
+                          }).toList(),
                         ),
-                        SizedBox(height: 20),
+                      );
+                    } else {
+                      return Text('No deals available');
+                    }
+                  },
+                ),
+                SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -227,42 +226,45 @@ class _AccueilScreenState extends State<AccueilScreen> {
                             ),
                           ],
                         ),
-                        SizedBox(height: 10),
-                        SingleChildScrollView(
-                          scrollDirection: Axis.vertical,
-                          child: Column(
-                            children: [
-                              Builder(builder: (BuildContext context) {
-                                return SingleChildScrollView(
-                                  scrollDirection: Axis.vertical,
-                                  child: Column(
-                                    children: PromoPubs.map((pub) {
-                                      print(pub);
-                                      return Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 5.0),
-                                        child: PromoCard(
-                                          pub: pub, // Pass the pub to DealCard
-                                        ),
-                                      );
-                                    }).toList(),
-                                  ),
-                                );
-                              }),
-                            ],
-                          ),
+                       SizedBox(height: 10),
+                FutureBuilder<List<Pub>>(
+                  future: topPromotionsPubs,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return CircularProgressIndicator();
+                    } else if (snapshot.hasError) {
+                      return Text('Error: ${snapshot.error}');
+                    } else if (snapshot.hasData) {
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: snapshot.data!.map((pub) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 5.0),
+                              child: PromoCard(
+                                pub: pub,
+                              ),
+                            );
+                          }).toList(),
                         ),
-                      ],
-                    ),
-                  ),
+                      );
+                    } else {
+                      return Text('No promotions available');
+                    }
+                  },
                 ),
               ],
             ),
           ),
         ),
+              ],
+      ),
+          ),
+        ),
       ),
     );
   }
+
 
   void loadingHandler(BuildContext context) {
     setState(() {

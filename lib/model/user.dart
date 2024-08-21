@@ -9,6 +9,7 @@ class User {
   String email;
   String password;
   String adress;
+  String? image;
 
   User({
     required this.user_id,
@@ -18,6 +19,7 @@ class User {
     required this.email,
     required this.password,
     required this.adress,
+     this.image,
   });
 
   User copyWith({
@@ -28,6 +30,8 @@ class User {
     String? email,
     String? password,
     String? adress,
+    String? image,
+    
   }) {
     return User(
       user_id: user_id ?? this.user_id,
@@ -37,6 +41,7 @@ class User {
       email: email ?? this.email,
       password: password ?? this.password,
       adress: adress ?? this.adress,
+      image: image ?? this.image,
     );
   }
 
@@ -49,6 +54,7 @@ class User {
       'email': email,
       'password': password,
       'adress': adress,
+      'image': image,
     };
   }
 
@@ -61,6 +67,7 @@ class User {
       email: map['email'] as String,
       password: map['password'] as String,
       adress: map['adress'] as String,
+      image: map['image'] as String,
     );
   }
 
@@ -71,7 +78,7 @@ class User {
 
   @override
   String toString() {
-    return 'User(user_id: $user_id, username: $username, lastname: $lastname, age: $age, email: $email, password: $password, adress: $adress)';
+    return 'User(user_id: $user_id, username: $username, lastname: $lastname, age: $age, email: $email, password: $password, adress: $adress, image: $image)';
   }
 
   @override
@@ -85,7 +92,9 @@ class User {
       other.age == age &&
       other.email == email &&
       other.password == password &&
+      other.image == image &&
       other.adress == adress;
+      
   }
 
   @override
@@ -94,6 +103,7 @@ class User {
       username.hashCode ^
       lastname.hashCode ^
       age.hashCode ^
+      image.hashCode ^
       email.hashCode ^
       password.hashCode ^
       adress.hashCode;
