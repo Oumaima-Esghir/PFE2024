@@ -35,6 +35,47 @@ class ClientService extends Client {
     }
   }
 
+//partners pubs
+  Future<List<Pub>> partnerpubs() async {
+    final url = Uri.parse('$baseUrl/partenaires/pubs');
+    final headers = await getHeaders(); // Obtenir les en-têtes avec le jeton
+    print(headers.toString());
+
+    try {
+      final response = await http.get(url, headers: headers);
+      print("data" + response.body);
+      if (response.statusCode == 200) {
+        print("API call successful. Decoding response...");
+
+        final Map<String, dynamic> responseData = json.decode(response.body);
+
+        if (responseData.containsKey('pubs') && responseData['pubs'] is List) {
+          final List<dynamic> pubsData = responseData['pubs'];
+          print(
+              "First pub data: ${pubsData.isNotEmpty ? pubsData[0] : 'No data'}");
+
+          // Mapper chaque élément de la liste vers un objet Pub
+          List<Pub> pubs = pubsData.map((pub) {
+            // Gestion de la possible absence de certains champs (null safety)
+            return Pub.fromMap(pub as Map<String, dynamic>);
+          }).toList();
+
+          print("Converted pubs: $pubs");
+          return pubs;
+        } else {
+          print("Error: 'pubs' key not found or is not a list");
+          return [];
+        }
+      } else {
+        print('Failed to load pubs, status code: ${response.statusCode}');
+        throw Exception('Failed to load pubs');
+      }
+    } catch (e) {
+      print('An error occurred: $e');
+      throw Exception('Failed to load pubs due to an error');
+    }
+  }
+
   /*Future<http.Response> register(User user) {
     return post(EndPoints.register, body: user.toMap());
   }*/
@@ -89,7 +130,7 @@ class ClientService extends Client {
     final token = await getToken();
     return {
       'Content-Type': 'application/json',
-      'Authorization': '$token',
+      'Authorization': 'Bearer $token',
     };
   }
 

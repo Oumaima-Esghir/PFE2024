@@ -1,9 +1,15 @@
+import 'dart:convert';
+
 import 'package:dealdiscover/screens/PartnerScreens/edit_profile_partner.dart';
+import 'package:dealdiscover/screens/UserScreens/EditProfile_screen.dart';
 import 'package:dealdiscover/screens/authentication/signin_screen.dart';
 import 'package:dealdiscover/screens/menus/hidden_drawer.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart'; // Import jwt_decoder
+import 'package:http/http.dart' as http; // Import http package
 
 class ProfileAsPartnerScreen extends StatefulWidget {
   const ProfileAsPartnerScreen({super.key});
@@ -15,6 +21,59 @@ class ProfileAsPartnerScreen extends StatefulWidget {
 class _ProfileAsPartnerScreenState extends State<ProfileAsPartnerScreen> {
   //bool isLoading1 = false;
   bool isLoading2 = false;
+
+  String? userId; // Store userId here
+  Map<String, dynamic>? userData; // Store user details here
+  Future<void> _getUserDetails() async {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => EditProfilePartnerScreen(userData: userData)),
+    );
+  }
+
+  Future<void> _getUser() async {
+    print("Starting to fetch user details...");
+
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token') ?? "";
+
+    if (token.isNotEmpty) {
+      try {
+        // Decode the token
+        final decodedToken = JwtDecoder.decode(token);
+        userId = decodedToken['userId'];
+        print("User ID: $userId");
+
+        if (userId != null) {
+          // Make the HTTP request to fetch user details
+          final response = await http.get(
+            Uri.parse(
+                'http://10.0.2.2:3000/admin/partners/$userId'), // Replace with your API endpoint
+          );
+
+          if (response.statusCode == 200) {
+            print("User details: ${response.body}");
+            userData = jsonDecode(response.body);
+
+            setState(() {
+              print("User details: $response");
+            });
+          } else {
+            print('Failed to load user details: ${response.statusCode}');
+          }
+        }
+      } catch (e) {
+        print('Error fetching user details: $e');
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    _getUser();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -75,19 +134,21 @@ class _ProfileAsPartnerScreenState extends State<ProfileAsPartnerScreen> {
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(
-                            90), // Adjust the radius as needed*/
-
+                            90), // Adjust the radius as needed
                         child: Image(
-                          image: AssetImage('assets/images/bruscetta.jpg'),
                           width: 180,
                           height: 180,
-
                           fit: BoxFit.cover, // Adjust the fit as needed
+                          image: userData != null && userData?['image'] != null
+                              ? NetworkImage(
+                                  'http://10.0.2.2:3000/images/${userData?['image']}')
+                              : const AssetImage('assets/images/bruscetta.jpg')
+                                  as ImageProvider,
                         ),
                       ),
                       SizedBox(height: 40),
                       Text(
-                        "BRUCHETTA",
+                        userData?['name'] ?? "",
                         style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -99,15 +160,7 @@ class _ProfileAsPartnerScreenState extends State<ProfileAsPartnerScreen> {
                           height: 60, // Adjust height as needed
                           width: 250, // Make button full width
                           child: TextButton(
-                            onPressed: () {
-                              // Add your logic here
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        EditProfilePartnerScreen()),
-                              );
-                            },
+                            onPressed: () => _getUserDetails(),
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
                                   MyColors.btnColor),

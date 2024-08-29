@@ -12,7 +12,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class DealDetailsScreen extends StatefulWidget {
-  final String pubId;
+  final String? pubId;
   final Pub pub;
 
   DealDetailsScreen({Key? key, required this.pubId, required this.pub})
@@ -319,7 +319,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                           ),
                           SizedBox(width: 5),
                           Text(
-                            widget.pub.address ?? 'No Address',
+                            widget.pub.adress ?? 'No Address',
                             style: TextStyle(
                               fontSize: 16,
                               color: Colors.black,

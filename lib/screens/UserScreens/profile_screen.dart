@@ -6,6 +6,8 @@ import 'package:dealdiscover/utils/colors.dart';
 import 'package:dealdiscover/widgets/DealCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:jwt_decoder/jwt_decoder.dart'; // Import jwt_decoder
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -18,8 +20,28 @@ class _ProfileScreenState extends State<ProfileScreen> {
   bool isLoading1 = false;
   bool isLoading2 = false;
   List<Pub> filteredPubs = [];
+  Future<String> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token') ?? "";
+  }
 
- /* @override
+  Future<void> _getUserDetails() async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('token') ?? "";
+    print("helloo");
+    if (token.isNotEmpty) {
+      // Decode the token
+      final decodedToken = JwtDecoder.decode(token);
+      print(decodedToken);
+    }
+    //  Navigator.push(
+    //                             context,
+    //                             MaterialPageRoute(
+    //                                 builder: (context) => EditProfileScreen()),
+    //                           );
+  }
+
+  /* @override
   void initState() {
     super.initState();
     filteredPubs = listOfIPubs
@@ -107,13 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 60,
                           width: 250,
                           child: TextButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => EditProfileScreen()),
-                              );
-                            },
+                            onPressed: () => _getUserDetails,
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
                                   MyColors.btnColor),
@@ -165,7 +181,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         SizedBox(height: 20),
                         // Display DealCard widgets here
-                     /*   SingleChildScrollView(
+                        /*   SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: filteredPubs.map((pub) {

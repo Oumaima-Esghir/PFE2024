@@ -1,3 +1,5 @@
+import 'package:dealdiscover/client/client_service.dart';
+import 'package:dealdiscover/model/pub.dart';
 import 'package:dealdiscover/screens/PartnerScreens/add_deal_screen.dart';
 import 'package:dealdiscover/screens/PartnerScreens/signup_partner_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
@@ -14,29 +16,19 @@ class DealsManagementScreen extends StatefulWidget {
 
 class _DealsManagementScreenState extends State<DealsManagementScreen> {
   bool isLoading = false;
+  late Future<List<Pub>> partnerPubs;
+  ClientService clientService = ClientService();
+
+  @override
+  void initState() {
+    super.initState();
+    partnerPubs = clientService.partnerpubs();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBodyBehindAppBar: true,
-      /* appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        actions: [
-          GestureDetector(
-            onTap: () {
-              loadingHandler(context);
-            },
-            child: Container(
-              margin: EdgeInsets.only(right: 330),
-              child: Image.asset(
-                'assets/images/arrowL.png',
-                width: 45.0,
-                height: 45.0,
-              ),
-            ),
-          ),
-        ],
-      ),*/
       resizeToAvoidBottomInset: false,
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -47,105 +39,104 @@ class _DealsManagementScreenState extends State<DealsManagementScreen> {
             fit: BoxFit.fill,
           ),
         ),
-        child: SingleChildScrollView(
-            child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
+        child: Padding(
+          padding: const EdgeInsets.only(top: 100.0),
           child: Column(
             children: [
               Container(
-                width: 350,
-                height: 80,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                width: MediaQuery.of(context).size.width,
+                padding: EdgeInsets.symmetric(horizontal: 10.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          "My Deals",
-                          style: TextStyle(
-                            fontSize: 22, // Customize the text style as needed
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Center(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              // Add your sign in logic here
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => AddDealScreen()),
-                              );
-                            },
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.white),
-                              shape: MaterialStateProperty.all<OutlinedBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                  side: BorderSide(
-                                      color: MyColors.btnBorderColor, width: 2),
-                                ),
-                              ),
-                              fixedSize: MaterialStateProperty.all<Size>(
-                                  Size(160, 50)),
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Add Deal',
-                                  style: TextStyle(color: Colors.black),
-                                ),
-                                SizedBox(width: 10),
-                                Image.asset(
-                                  'assets/images/add.png',
-                                  width: 40,
-                                  height: 40,
-                                )
-                              ],
-                            ),
-                          ),
-                        ),
-                      ],
+                    Text(
+                      "My Deals",
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    // Add more widgets here as needed
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => AddDealScreen(),
+                          ),
+                        );
+                      },
+                      style: ButtonStyle(
+                        backgroundColor:
+                            MaterialStateProperty.all<Color>(Colors.white),
+                        shape: MaterialStateProperty.all<OutlinedBorder>(
+                          RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            side: BorderSide(
+                                color: MyColors.btnBorderColor, width: 2),
+                          ),
+                        ),
+                        fixedSize:
+                            MaterialStateProperty.all<Size>(Size(160, 50)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Add Deal',
+                            style: TextStyle(color: Colors.black),
+                          ),
+                          SizedBox(width: 10),
+                          Image.asset(
+                            'assets/images/add.png',
+                            width: 40,
+                            height: 40,
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Padding(
-                  padding: EdgeInsets.all(
-                    10,
-                  ),
-                  child: SingleChildScrollView(
-                    scrollDirection: Axis.vertical,
-                    child: Column(
-                      children: [
-                        SizedBox(
-                          height: 50,
+              SizedBox(
+                height: 20,
+              ),
+              Expanded(
+                child: FutureBuilder<List<Pub>>(
+                  future: partnerPubs,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return Center(child: CircularProgressIndicator());
+                    } else if (snapshot.hasError) {
+                      return Center(child: Text('Error: ${snapshot.error}'));
+                    } else if (snapshot.hasData) {
+                      return SingleChildScrollView(
+                        scrollDirection: Axis.vertical,
+                        child: Column(
+                          children: snapshot.data!.map((pub) {
+                            return Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 5.0),
+                              child: Column(
+                                children: [
+                                  DealPartnerItem(pub: pub),
+                                  SizedBox(
+                                      height:
+                                          10), // Ajoute un espace de 10 pixels entre les éléments
+                                ],
+                              ),
+                            );
+                          }).toList(),
                         ),
-                        DealPartnerItem(),
-                        // SizedBox(height: 10),
-                        // DealPartnerItem(),
-                        // SizedBox(height: 10),
-                        // DealPartnerItem(),
-                        // SizedBox(height: 10),
-                        // DealPartnerItem(),
-                        // SizedBox(height: 10),
-                        // DealPartnerItem(),
-                      ],
-                    ),
-                  ),
+                      );
+                    } else {
+                      return Center(child: Text('No deals available'));
+                    }
+                  },
                 ),
               ),
             ],
           ),
-        )),
+        ),
       ),
     );
   }

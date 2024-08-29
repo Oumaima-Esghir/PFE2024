@@ -1,5 +1,4 @@
 abstract class EndPoints {
-  
 //user
   static const String signupuser = "/users/signup";
   static const String signinuser = "/users/signin";
@@ -7,11 +6,10 @@ abstract class EndPoints {
 //partenaire
   static const String partnersignup = "/partenaires/signup";
   static const String partnersignin = "/partenaires/signin";
+  static const String partnerpubs = "/partenaires/pubs";
 
 //pubs
   static const String getPubs = "/pubs";
-
-  
 
   static const String createcomment = "/comments";
   static const String deletecomment = "/comments/:id";

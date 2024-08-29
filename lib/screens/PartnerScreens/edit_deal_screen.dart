@@ -1,13 +1,18 @@
+import 'dart:convert'; // Import for JSON encoding
+import 'dart:io';
+import 'package:dealdiscover/model/pub.dart';
 import 'package:dealdiscover/screens/PartnerScreens/deals_management_screen.dart';
 import 'package:dealdiscover/screens/menus/hidden_drawer.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:intl/intl.dart';
+import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart'; // Import for HTTP requests
 
 class EditDealScreen extends StatefulWidget {
-  const EditDealScreen({super.key});
+  final Pub pub;
+  const EditDealScreen({super.key, required this.pub});
 
   @override
   State<EditDealScreen> createState() => _EditDealScreenState();
@@ -16,13 +21,44 @@ class EditDealScreen extends StatefulWidget {
 class _EditDealScreenState extends State<EditDealScreen> {
   String? stateValue;
   bool isLoading = false;
-  //DateTime? fromDate;
-  //DateTime? toDate;
-  //TimeOfDay? fromTime;
-  //TimeOfDay? toTime;
+  late TextEditingController titleController;
+  late TextEditingController addressController;
+  late TextEditingController descriptionController;
+  late TextEditingController dureeController;
+  late TextEditingController pourcentageController;
+  File? _image;
+  @override
+  void initState() {
+    super.initState();
+    // Initialize controllers with pub data
+    titleController = TextEditingController(text: widget.pub.title);
+    addressController = TextEditingController(text: widget.pub.adress);
+    descriptionController = TextEditingController(text: widget.pub.description);
+    dureeController = TextEditingController(text: widget.pub.duree);
+    pourcentageController =
+        TextEditingController(text: widget.pub.pourcentage.toString());
+    stateValue = widget.pub.state == 'promo' ? 'promo' : 'not in promo';
+    bool imagegeted = false;
+  }
+
+  @override
+  void dispose() {
+    // Dispose controllers when the widget is disposed
+    titleController.dispose();
+    addressController.dispose();
+    descriptionController.dispose();
+    dureeController.dispose();
+    pourcentageController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
+    bool isPromoDisabled = widget.pub.state == 'offre';
+    String imageUrl = '';
+    TimeOfDay selectedTime = TimeOfDay.now();
+
+    bool imagegeted = false;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -55,460 +91,418 @@ class _EditDealScreenState extends State<EditDealScreen> {
           ),
         ),
         child: SingleChildScrollView(
-            child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
-          child: Column(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment
-                    .center, // Center child widgets horizontally
-                children: [
-                  Image.asset(
-                    'assets/images/addP.png',
-                    width: 100,
-                    height: 100,
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  Text(
-                    "Edit Your Image",
-                    style: TextStyle(
-                      color: MyColors.btnBorderColor,
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              Container(
-                width: 350,
-                height: 655,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 100, 0, 0),
+            child: Column(
+              children: [
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 20),
-                    Text(
-                      "Title",
-                      style: TextStyle(
-                        color: MyColors.btnBorderColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    CircleAvatar(
+                      radius:
+                          100, // Adjust the radius to control the size of the circle
+                      backgroundImage: imagegeted == true
+                          ? FileImage(_image!)
+                          : NetworkImage(
+                                  'http://10.0.2.2:3000/images/${widget.pub.pubImage}')
+                              as ImageProvider,
                     ),
                     SizedBox(height: 10),
-                    SizedBox(
-                      width: 350, // Adjust width as needed
-                      height: 55, // Adjust height as needed
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: "Write Your Title",
-                          filled:
-                              true, // Set to true to fill the TextField background
-                          fillColor: MyColors.backbtn1,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: MyColors.btnColor,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: MyColors.btnBorderColor,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
+                    TextButton(
+                      onPressed: () async {
+                        final image = await ImagePicker()
+                            .pickImage(source: ImageSource.gallery);
+                        if (image != null) {
+                          setState(() {
+                            _image = File(image.path);
+                            imagegeted = true;
+                          });
+                          print("L'image: ${_image!.path}");
+                        }
+                      },
+                      style: TextButton.styleFrom(
+                        side: BorderSide(
+                            color:
+                                MyColors.btnBorderColor), // Add a border color
+                      ),
+                      child: Text(
+                        "Edit Your Image",
+                        style: TextStyle(
+                          color: MyColors.btnBorderColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      "Adress",
-                      style: TextStyle(
-                        color: MyColors.btnBorderColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    SizedBox(
-                      width: 350, // Adjust width as needed
-                      height: 55, // Adjust height as needed
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: "Write Your Adress",
-                          filled:
-                              true, // Set to true to fill the TextField background
-                          fillColor: MyColors.backbtn1,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: MyColors.btnColor,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: MyColors.btnBorderColor,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    /* Text(
-                      "Date & Time",
-                      style: TextStyle(
-                        color: MyColors.btnBorderColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment
-                          .spaceBetween, // Adjust alignment as needed
-                      children: [
-                        SizedBox(
-                          width:
-                              170, // Adjust width as needed for the first date picker
-                          height: 55,
-                          child: TextField(
-                            readOnly: true,
-                            onTap: () {
-                              // Add logic to open date picker and set selected date to 'fromDate'
-                              showDatePicker(
-                                context: context,
-                                initialDate: fromDate ?? DateTime.now(),
-                                firstDate: DateTime(1900),
-                                lastDate: DateTime.now(),
-                              ).then((selectedDate) {
-                                if (selectedDate != null) {
-                                  setState(() {
-                                    fromDate = selectedDate;
-                                  });
-                                }
-                              });
-                            },
-                            decoration: InputDecoration(
-                              hintText: fromDate != null
-                                  ? "${DateFormat('dd-MM-yyyy').format(fromDate!)}"
-                                  : "Select From Date",
-                              filled: true,
-                              fillColor: MyColors.backbtn1,
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: MyColors.btnColor,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: MyColors.btnBorderColor,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              suffixIcon: Icon(Icons.calendar_month_rounded),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width:
-                              170, // Adjust width as needed for the second date picker
-                          height: 55,
-                          child: TextField(
-                            readOnly: true,
-                            onTap: () {
-                              // Add logic to open date picker and set selected date to 'toDate'
-                              showDatePicker(
-                                context: context,
-                                initialDate: toDate ?? DateTime.now(),
-                                firstDate: DateTime(1900),
-                                lastDate: DateTime(2100),
-                              ).then((selectedDate) {
-                                if (selectedDate != null) {
-                                  setState(() {
-                                    toDate = selectedDate;
-                                  });
-                                }
-                              });
-                            },
-                            decoration: InputDecoration(
-                              hintText: toDate != null
-                                  ? "${DateFormat('dd-MM-yyyy').format(toDate!)}"
-                                  : "Select To Date",
-                              filled: true,
-                              fillColor: MyColors.backbtn1,
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: MyColors.btnColor,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: MyColors.btnBorderColor,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              suffixIcon: Icon(Icons.calendar_month_rounded),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment
-                          .spaceBetween, // Adjust alignment as needed
-                      children: [
-                        SizedBox(
-                          width:
-                              170, // Adjust width as needed for the first time picker
-                          height: 55,
-                          child: TextField(
-                            readOnly: true,
-                            onTap: () {
-                              // Add logic to open time picker and set selected time to 'fromTime'
-                              showTimePicker(
-                                context: context,
-                                initialTime: fromTime ?? TimeOfDay.now(),
-                              ).then((selectedTime) {
-                                if (selectedTime != null) {
-                                  setState(() {
-                                    fromTime = selectedTime;
-                                  });
-                                }
-                              });
-                            },
-                            decoration: InputDecoration(
-                              hintText: fromTime != null
-                                  ? "${fromTime!.hour}:${fromTime!.minute}"
-                                  : "Select From Time",
-                              filled: true,
-                              fillColor: MyColors.backbtn1,
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: MyColors.btnColor,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: MyColors.btnBorderColor,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              suffixIcon: Icon(Icons.access_time),
-                            ),
-                          ),
-                        ),
-                        SizedBox(
-                          width:
-                              170, // Adjust width as needed for the second time picker
-                          height: 55,
-                          child: TextField(
-                            readOnly: true,
-                            onTap: () {
-                              // Add logic to open time picker and set selected time to 'toTime'
-                              showTimePicker(
-                                context: context,
-                                initialTime: toTime ?? TimeOfDay.now(),
-                              ).then((selectedTime) {
-                                if (selectedTime != null) {
-                                  setState(() {
-                                    toTime = selectedTime;
-                                  });
-                                }
-                              });
-                            },
-                            decoration: InputDecoration(
-                              hintText: toTime != null
-                                  ? "${toTime!.hour}:${toTime!.minute}"
-                                  : "Select To Time",
-                              filled: true,
-                              fillColor: MyColors.backbtn1,
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: MyColors.btnColor,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(
-                                  color: MyColors.btnBorderColor,
-                                  width: 1,
-                                ),
-                                borderRadius: BorderRadius.circular(10.0),
-                              ),
-                              suffixIcon: Icon(Icons.access_time),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    */
-                    SizedBox(height: 20),
-                    Text(
-                      "Description",
-                      style: TextStyle(
-                        color: MyColors.btnBorderColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(height: 10),
-                    SizedBox(
-                      width: 350, // Adjust width as needed
-                      height: 55, // Adjust height as needed
-                      child: TextField(
-                        decoration: InputDecoration(
-                          hintText: "Write Your Description",
-                          filled:
-                              true, // Set to true to fill the TextField background
-                          fillColor: MyColors.backbtn1,
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: MyColors.btnColor,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: MyColors.btnBorderColor,
-                              width: 1,
-                            ),
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                        ),
-                      ),
-                    ),
-                    SizedBox(height: 20),
-                    Text(
-                      "Deal State",
-                      style: TextStyle(
-                        color: MyColors.btnBorderColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10,
-                    ),
-                    Container(
-                      height: 55, // Adjust height as needed
-                      decoration: BoxDecoration(
-                        color: MyColors.backbtn1,
-                        border: Border.all(
-                            color: MyColors.btnColor), // White border
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 60),
-                        // Add horizontal padding
-                        child: Row(
-                          children: [
-                            // Gender radio buttons
-                            Radio<String>(
-                              value: "promo",
-                              groupValue: stateValue,
-                              onChanged: (value) {
-                                setState(() {
-                                  stateValue = value;
-                                });
-                              },
-                              activeColor: MyColors
-                                  .btnBorderColor, // Change the color of the selected radio button
-                            ),
-                            Text("Promo"),
-                            Radio<String>(
-                              value: "not in promo",
-                              groupValue: stateValue,
-                              onChanged: (value) {
-                                setState(() {
-                                  stateValue = value;
-                                });
-                              },
-                              activeColor: MyColors
-                                  .btnBorderColor, // Change the color of the selected radio button
-                            ),
-                            Text("Not in Promo"),
-                          ],
-                        ),
-                      ),
-                    ),
+                    )
                   ],
                 ),
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                child: Padding(
-                  padding: EdgeInsets.only(
-                    left: 20,
-                  ),
-                  // Adjust the left margin as needed
-                  child: Center(
-                    child: SizedBox(
-                      height: 60, // Adjust height as needed
-                      width: 350, // Make button full width
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => DealsManagementScreen(),
+                Container(
+                  width: 350,
+                  height: 855,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 20),
+                      Text(
+                        "Title",
+                        style: TextStyle(
+                          color: MyColors.btnBorderColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      SizedBox(
+                        width: 350,
+                        height: 55,
+                        child: TextField(
+                          controller: titleController,
+                          decoration: InputDecoration(
+                            hintText: "Write Your Title",
+                            filled: true,
+                            fillColor: MyColors.backbtn1,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: MyColors.btnColor,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(10.0),
                             ),
-                          );
-                        },
-                        style: ButtonStyle(
-                          backgroundColor: MaterialStateProperty.all<Color>(
-                              MyColors.btnColor),
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.white),
-                          shape:
-                              MaterialStateProperty.all<RoundedRectangleBorder>(
-                            RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                              side: BorderSide(
-                                color: Colors.white,
-                                width: 4,
-                              ), // Add white border
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: MyColors.btnBorderColor,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(10.0),
                             ),
                           ),
                         ),
-                        child: Text(
-                          "Done",
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        "Address",
+                        style: TextStyle(
+                          color: MyColors.btnBorderColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      SizedBox(
+                        width: 350,
+                        height: 55,
+                        child: TextField(
+                          controller: addressController,
+                          decoration: InputDecoration(
+                            hintText: "Write Your Address",
+                            filled: true,
+                            fillColor: MyColors.backbtn1,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: MyColors.btnColor,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: MyColors.btnBorderColor,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        "Description",
+                        style: TextStyle(
+                          color: MyColors.btnBorderColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      SizedBox(
+                        width: 350,
+                        height: 55,
+                        child: TextField(
+                          controller: descriptionController,
+                          decoration: InputDecoration(
+                            hintText: "Write Your Description",
+                            filled: true,
+                            fillColor: MyColors.backbtn1,
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: MyColors.btnColor,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderSide: BorderSide(
+                                color: MyColors.btnBorderColor,
+                                width: 1,
+                              ),
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      Text(
+                        "Deal State",
+                        style: TextStyle(
+                          color: MyColors.btnBorderColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      SizedBox(height: 10),
+                      Container(
+                        height: 55,
+                        decoration: BoxDecoration(
+                          color: MyColors.backbtn1,
+                          border: Border.all(color: MyColors.btnColor),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 60),
+                          child: Row(
+                            children: [
+                              Radio<String>(
+                                value: "promo",
+                                groupValue: stateValue,
+                                onChanged: isPromoDisabled
+                                    ? null
+                                    : (value) {
+                                        setState(() {
+                                          stateValue = value;
+                                        });
+                                      },
+                                activeColor: MyColors.btnBorderColor,
+                              ),
+                              Text("Promo"),
+                              Radio<String>(
+                                value: "not in promo",
+                                groupValue: stateValue,
+                                onChanged: (value) {
+                                  setState(() {
+                                    stateValue = value;
+                                  });
+                                },
+                                activeColor: MyColors.btnBorderColor,
+                              ),
+                              Text("Not in Promo"),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 20),
+                      if (widget.pub.state != 'offre') ...[
+                        Text(
+                          "Duree",
                           style: TextStyle(
-                            fontSize: 20,
+                            color: MyColors.btnBorderColor,
+                            fontSize: 16,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        SizedBox(height: 10),
+                        SizedBox(
+                          width: 350,
+                          height: 55,
+                          child: TextField(
+                            controller: dureeController,
+                            decoration: InputDecoration(
+                              hintText: "Write Extra Field 1",
+                              filled: true,
+                              fillColor: MyColors.backbtn1,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: MyColors.btnColor,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: MyColors.btnBorderColor,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(height: 20),
+                        Text(
+                          "pourcentage",
+                          style: TextStyle(
+                            color: const Color.fromARGB(255, 110, 127, 139),
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        SizedBox(height: 10),
+                        SizedBox(
+                          width: 350,
+                          height: 55,
+                          child: TextField(
+                            controller: pourcentageController,
+                            decoration: InputDecoration(
+                              hintText: "Write Extra Field 2",
+                              filled: true,
+                              fillColor: MyColors.backbtn1,
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: MyColors.btnColor,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: MyColors.btnBorderColor,
+                                  width: 1,
+                                ),
+                                borderRadius: BorderRadius.circular(10.0),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ] else ...[
+                        Text(
+                          "Deal State",
+                          style: TextStyle(
+                            color: MyColors.btnBorderColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                      SizedBox(height: 25),
+                      Container(
+                        width: 350,
+                        height: 50,
+                        child: SizedBox(
+                          height: 60,
+                          width: 350,
+                          child: TextButton(
+                            onPressed: () async {
+                              if (await updateDeal()) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        DealsManagementScreen(),
+                                  ),
+                                );
+                              }
+                            },
+                            style: ButtonStyle(
+                              backgroundColor: MaterialStateProperty.all<Color>(
+                                  MyColors.btnColor),
+                              foregroundColor: MaterialStateProperty.all<Color>(
+                                  Colors.white),
+                              shape: MaterialStateProperty.all<
+                                  RoundedRectangleBorder>(
+                                RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  side: BorderSide(
+                                    color: Colors.white,
+                                    width: 4,
+                                  ),
+                                ),
+                              ),
+                            ),
+                            child: Text(
+                              "Done",
+                              style: TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-        )),
+        ),
       ),
     );
+  }
+
+  Future<String> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token') ?? "";
+  }
+
+// Ensure the token is correctly retrieved
+  Future<Map<String, String>> getHeaders() async {
+    final token = await getToken();
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
+  }
+
+  Future<bool> updateDeal() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    // API endpoint and request
+    final url = Uri.parse('http://10.0.2.2:3000/pubs/${widget.pub.id}');
+    print("iddd:" + widget.pub.toString());
+    final token = await getToken();
+
+    // Encode image to base64 if it's been changed
+    String? base64Image;
+    if (_image != null) {
+      final bytes = await _image!.readAsBytes();
+      base64Image = base64Encode(bytes);
+    }
+
+    print("base64Image");
+    print(base64Image);
+    print("base64Image");
+    final response = await http.put(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+      body: jsonEncode({
+        'title': titleController.text,
+        'adress': addressController.text,
+        'description': descriptionController.text,
+        // 'duree': dureeController.text,
+        // 'pourcentage': pourcentageController.text,
+        'state': stateValue == "not in promo" ? "offre" : stateValue,
+        'pubImage': base64Image,
+      }),
+    );
+
+    setState(() {
+      isLoading = false;
+    });
+
+    if (response.statusCode == 200) {
+      return true; // Successful update
+    } else {
+      print(response.statusCode);
+      // Handle error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to update deal')),
+      );
+      return false; // Failed update
+    }
   }
 
   void loadingHandler(BuildContext context) {

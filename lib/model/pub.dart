@@ -1,12 +1,11 @@
-
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'dart:convert';
 
 class Pub {
-  String id;
+  String? id;
   final double? rating;
   String? title;
-  String? address;
+  String? adress;
   String? description;
   final String? pubImage;
   String? category;
@@ -14,13 +13,12 @@ class Pub {
   final String? state;
   String? duree;
   final int? pourcentage;
-  
 
   Pub({
-    required this.id,
+    this.id,
     required this.rating,
     required this.title,
-    required this.address,
+    required this.adress,
     required this.description,
     required this.pubImage,
     required this.category,
@@ -34,7 +32,7 @@ class Pub {
     String? id,
     double? rating,
     String? title,
-    String? address,
+    String? adress,
     String? description,
     String? pubImage,
     String? category,
@@ -47,7 +45,7 @@ class Pub {
       id: id ?? this.id,
       rating: rating ?? this.rating,
       title: title ?? this.title,
-      address: address ?? this.address,
+      adress: adress ?? this.adress,
       description: description ?? this.description,
       pubImage: pubImage ?? this.pubImage,
       category: category ?? this.category,
@@ -63,7 +61,7 @@ class Pub {
       'id': id,
       'rating': rating,
       'title': title,
-      'address': address,
+      'adress': adress,
       'description': description,
       'pubImage': pubImage,
       'category': category,
@@ -76,17 +74,17 @@ class Pub {
 
   factory Pub.fromMap(Map<String, dynamic> map) {
     return Pub(
-      id: map['id'] as String,
-      rating: map['rating'] != null ? map['rating'] as double : null,
-      title: map['title'] != null ? map['title'] as String : null,
-      address: map['address'] != null ? map['address'] as String : null,
-      description: map['description'] != null ? map['description'] as String : null,
-      pubImage: map['pubImage'] != null ? map['pubImage'] as String : null,
-      category: map['category'] != null ? map['category'] as String : null,
-      nb_likes: map['nb_likes'] != null ? map['nb_likes'] as int : null,
-      state: map['state'] != null ? map['state'] as String : null,
-      duree: map['duree'] != null ? map['duree'] as String : null,
-      pourcentage: map['pourcentage'] != null ? map['pourcentage'] as int : null,
+      id: map['id'] as String? ?? '', // Default to empty string if null
+      rating: map['rating'] != null ? (map['rating'] as num).toDouble() : null,
+      title: map['title'] as String?,
+      adress: map['adress'] as String?,
+      description: map['description'] as String?,
+      pubImage: map['pubImage'] as String?,
+      category: map['category'] as String?,
+      nb_likes: map['nb_likes'] as int?,
+      state: map['state'] as String?,
+      duree: map['duree'] as String?,
+      pourcentage: map['pourcentage'] as int?,
     );
   }
 
@@ -97,7 +95,7 @@ class Pub {
 
   @override
   String toString() {
-    return 'Pub(id: $id, rating: $rating, title: $title, address: $address, description: $description, pubImage: $pubImage, category: $category, nb_likes: $nb_likes, state: $state, duree: $duree, pourcentage: $pourcentage)';
+    return 'Pub(id: $id, rating: $rating, title: $title, adress: $adress, description: $description, pubImage: $pubImage, category: $category, nb_likes: $nb_likes, state: $state, duree: $duree, pourcentage: $pourcentage)';
   }
 
   @override
@@ -107,7 +105,7 @@ class Pub {
     return other.id == id &&
         other.rating == rating &&
         other.title == title &&
-        other.address == address &&
+        other.adress == adress &&
         other.description == description &&
         other.pubImage == pubImage &&
         other.category == category &&
@@ -122,7 +120,7 @@ class Pub {
     return id.hashCode ^
         rating.hashCode ^
         title.hashCode ^
-        address.hashCode ^
+        adress.hashCode ^
         description.hashCode ^
         pubImage.hashCode ^
         category.hashCode ^
@@ -140,7 +138,7 @@ class Pub {
   String id;
   final double? rating;
   String? title;
-  String? address;
+  String? adress;
   String? description;
   final String? pubImage;
   String? category;
@@ -153,7 +151,7 @@ class Pub {
     required this.id,
     required this.rating,
     required this.title,
-    required this.address,
+    required this.adress,
     required this.description,
     required this.pubImage,
     required this.category,
@@ -168,7 +166,7 @@ List<Pub> listOfIPubs = [
     id: "1",
     rating: 4,
     title: "El Mouradi Mahdia",
-    address: "Mahdia",
+    adress: "Mahdia",
     description: "Promo!!",
     pubImage: "assets/images/MouradiMahdia.jpg",
     category: "hotel",
@@ -180,7 +178,7 @@ List<Pub> listOfIPubs = [
     id: "2",
     rating: 4,
     title: "El Mouradi Mahdia",
-    address: "Mahdia",
+    adress: "Mahdia",
     description: "Promo!!",
     pubImage: "assets/images/MouradiMahdia.jpg",
     category: "hotel",
@@ -192,7 +190,7 @@ List<Pub> listOfIPubs = [
     id: "3",
     rating: 4.5,
     title: "LA CANTINE",
-    address: "Sousse",
+    adress: "Sousse",
     description: "Promo sur tous les pizzas!!",
     pubImage: "assets/images/lacantine.jpg",
     category: "restaurant",
@@ -204,7 +202,7 @@ List<Pub> listOfIPubs = [
     id: "4",
     rating: 4.3,
     title: "Café Sidi Salem La Grotte",
-    address: "Mahdia",
+    adress: "Mahdia",
     description: "promo sur la pizza ",
     pubImage: "assets/images/sidisalem.jpg",
     category: "restaurant",
@@ -216,7 +214,7 @@ List<Pub> listOfIPubs = [
     id: "5",
     rating: 5,
     title: "Marina Cap Monastir- Appart'Hôtel",
-    address: "hotel",
+    adress: "hotel",
     description:
         "Located next to the marina and the beach, in a 5 minutes walk from the city center, the apart hotel Marina Cap Monastir is ideal for a relaxing stay.",
     pubImage: "assets/images/marina.png",
@@ -229,7 +227,7 @@ List<Pub> listOfIPubs = [
     id: "6",
     rating: 4.3,
     title: "El Jem Amphitheater",
-    address: "ElJem",
+    adress: "ElJem",
     description:
         "This vast, golden-stoned amphitheater, dating from the 2nd century CE, rises to 40 meters high and is the fourth largest in the world, as well as being one of the best preserved surviving examples of amphitheater architecture.",
     pubImage: 'assets/images/jem.jpg',
@@ -242,7 +240,7 @@ List<Pub> listOfIPubs = [
     id: "7",
     rating: 4,
     title: "Hergla",
-    address: "Hergla",
+    adress: "Hergla",
     description:
         "It occupies the site of ancient Roman Horraca Caelia, which during the 2nd century CE lay directly on the boundary between the provinces of Byzacena and Zeugitana.",
     pubImage: "assets/images/hergla.jpg",
@@ -255,7 +253,7 @@ List<Pub> listOfIPubs = [
     id: "8",
     rating: 5,
     title: "Sousse Palace Hotel & Spa",
-    address: "Sousse",
+    adress: "Sousse",
     description:
         "Sousse Palace Hotel & Spa is located in the center of Sousse near the Medina, with direct access to a private beach. discount in spa!!",
     pubImage: "assets/images/soussepalace.jpg",
@@ -268,7 +266,7 @@ List<Pub> listOfIPubs = [
     id: "9",
     rating: 4,
     title: "El Mouradi Mahdia",
-    address: "Mahdia",
+    adress: "Mahdia",
     description: "Promo!!",
     pubImage: "assets/images/MouradiMahdia.jpg",
     category: "hotel",
@@ -280,7 +278,7 @@ List<Pub> listOfIPubs = [
     id: "10",
     rating: 5,
     title: "le pirate",
-    address: "Monastir",
+    adress: "Monastir",
     description: "Promo sur tous les plats!!",
     pubImage: "assets/images/lepirate.jpg",
     category: "restaurant",
@@ -292,7 +290,7 @@ List<Pub> listOfIPubs = [
     id: "11",
     rating: 6,
     title: "BRUCHETTA",
-    address: "Sousse",
+    adress: "Sousse",
     description: "Promo sur tous les pates!!",
     pubImage: "assets/images/bruscetta.jpg",
     category: "restaurant",
@@ -304,7 +302,7 @@ List<Pub> listOfIPubs = [
     id: "12",
     rating: 6.5,
     title: "Hotel Les Palmiers",
-    address: "Monastir",
+    adress: "Monastir",
     description:
         "Hotel les Palmiers is located directly on Skanes beach, a 5-minute drive from Monastir city center. It offers rooms with views of the sea or the outdoor swimming pools and garden. ",
     pubImage: "assets/images/palmier.png",
