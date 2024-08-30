@@ -202,7 +202,7 @@ class _AddDealScreenState extends State<AddDealScreen> {
                 ),
                 Container(
                   width: 350,
-                  height: 800,
+                  height: 750,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -480,9 +480,9 @@ class _AddDealScreenState extends State<AddDealScreen> {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  height: 50,
+                  height: 60,
                   child: Padding(
-                    padding: EdgeInsets.only(left: 20),
+                    padding: EdgeInsets.only(left: 18),
                     child: Center(
                       child: SizedBox(
                         height: 60,
@@ -491,11 +491,17 @@ class _AddDealScreenState extends State<AddDealScreen> {
                           onPressed: _addDeal,
                           style: ButtonStyle(
                             backgroundColor: MaterialStateProperty.all<Color>(
-                                MyColors.btnBorderColor),
+                                MyColors.btnColor),
+                            foregroundColor:
+                                MaterialStateProperty.all<Color>(Colors.white),
                             shape: MaterialStateProperty.all<
                                 RoundedRectangleBorder>(
                               RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(20.0),
+                                borderRadius: BorderRadius.circular(10),
+                                side: BorderSide(
+                                  color: Colors.white,
+                                  width: 4,
+                                ),
                               ),
                             ),
                           ),

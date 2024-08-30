@@ -1,5 +1,6 @@
 import 'package:dealdiscover/client/client_service.dart';
 import 'package:dealdiscover/model/pub.dart';
+import 'package:dealdiscover/screens/PartnerScreens/dealDetailsforpartner_screen.dart';
 import 'package:dealdiscover/screens/PartnerScreens/edit_deal_screen.dart';
 import 'package:dealdiscover/screens/dealDetails_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
@@ -144,7 +145,7 @@ class _DealPartnerItemState extends State<DealPartnerItem> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => DealDetailsScreen(
+                        builder: (context) => PartnerDealDetailsScreen(
                           pub: widget.pub,
                           pubId: widget.pub.id,
                         ),
