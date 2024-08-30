@@ -37,11 +37,12 @@ class _PromoCardCardState extends State<PromoCard> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
-                  child: Image.asset(
-                    widget.pub.pubImage == null ||
-                            widget.pub.pubImage!.isNotEmpty
-                        ? widget.pub.pubImage!
-                        : 'assets/images/vitrine1.png',
+                  child: Image(
+                    image: widget.pub.pubImage != null
+                        ? NetworkImage(
+                            'http://10.0.2.2:3000/images/${widget.pub.pubImage}')
+                        : AssetImage('assets/images/vitrine1.png')
+                            as ImageProvider,
                     width: 160,
                     height: 180,
                     fit: BoxFit.cover,

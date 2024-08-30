@@ -4,16 +4,16 @@ import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:dealdiscover/client/client_service.dart';
 
-class DealCard extends StatefulWidget {
+class FavoriteCard extends StatefulWidget {
   final Pub pub;
 
-  const DealCard({super.key, required this.pub});
+  const FavoriteCard({super.key, required this.pub});
 
   @override
-  _DealCardState createState() => _DealCardState();
+  _FavoriteCardState createState() => _FavoriteCardState();
 }
 
-class _DealCardState extends State<DealCard> {
+class _FavoriteCardState extends State<FavoriteCard> {
   bool isFavorited = false;
   bool isLoading = false;
 
@@ -148,9 +148,8 @@ class _DealCardState extends State<DealCard> {
                       child: GestureDetector(
                         // onTap: _toggleFavorite, // Handle favorite toggle
                         child: Image.asset(
-                          isFavorited
-                              ? 'assets/images/fav1.png' // Full heart image
-                              : 'assets/images/fav0.png', // Empty heart image
+                          'assets/images/fav1.png', // Full heart image
+                          // Empty heart image
                           width: 35,
                           height: 35,
                         ),

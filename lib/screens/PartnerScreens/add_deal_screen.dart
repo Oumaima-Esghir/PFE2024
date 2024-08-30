@@ -202,7 +202,7 @@ class _AddDealScreenState extends State<AddDealScreen> {
                 ),
                 Container(
                   width: 350,
-                  height: 750,
+                  height: 800,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -526,5 +526,22 @@ class _AddDealScreenState extends State<AddDealScreen> {
         ),
       ),
     );
+  }
+
+  void loadingHandler(BuildContext context) {
+    setState(() {
+      isLoading = true;
+    });
+    Future.delayed(const Duration(seconds: 2)).then((value) {
+      setState(() {
+        isLoading = false;
+        Navigator.pushReplacement(
+          context,
+          CupertinoPageRoute(
+            builder: (_) => const HiddenDrawer(),
+          ),
+        );
+      });
+    });
   }
 }

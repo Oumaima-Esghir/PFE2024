@@ -47,19 +47,19 @@ class _EditProfilePartnerScreenState extends State<EditProfilePartnerScreen> {
 
   Future<void> _updateProfile() async {
     // Validate passwords
-    String actualPassword = _actualpasswordController.text;
+
     String newPassword = _passwordController.text;
     String confirmPassword =
         _confirmpasswordController.text; // Assuming same controller
 
-    if (confirmPassword.isEmpty) {
+    if (newPassword.isNotEmpty && confirmPassword.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('All fields are required')),
       );
       return;
     }
 
-    if (newPassword.length < 8) {
+    if (newPassword.isNotEmpty && newPassword.length < 8) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text('New password must be at least 8 characters long')),

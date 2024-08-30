@@ -1,9 +1,14 @@
+import 'package:dealdiscover/model/plan.dart';
 import 'package:dealdiscover/screens/UserScreens/DetailPlanning_screen.dart';
 import 'package:dealdiscover/screens/UserScreens/EditPlanning_screen.dart';
+import 'package:dealdiscover/screens/UserScreens/calendar_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class PlanningItem extends StatefulWidget {
+  final Plan plan;
+  const PlanningItem({super.key, required this.plan});
   @override
   _PlanningItemState createState() => _PlanningItemState();
 }
@@ -45,7 +50,7 @@ class _PlanningItemState extends State<PlanningItem> {
                     ),
                     SizedBox(width: 15),
                     Text(
-                      '08:00',
+                      '${widget.plan.timeFrom}',
                       style: TextStyle(
                         fontSize: 14,
                       ),
@@ -57,7 +62,7 @@ class _PlanningItemState extends State<PlanningItem> {
                       ),
                     ),
                     Text(
-                      '10:00',
+                      '${widget.plan.timeTo}',
                       style: TextStyle(
                         fontSize: 14,
                       ),
@@ -81,16 +86,18 @@ class _PlanningItemState extends State<PlanningItem> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => EditPlanningScreen(),
+                            builder: (context) =>
+                                EditPlanningScreen(plan: widget.plan),
                           ),
                         );
                       } else if (result == 2) {
-                        // Handle delete action
+                        delete();
                       } else if (result == 3) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => DetailPlanningScreen(),
+                            builder: (context) =>
+                                DetailPlanningScreen(plan: widget.plan),
                           ),
                         );
                       }
@@ -121,7 +128,7 @@ class _PlanningItemState extends State<PlanningItem> {
                   width: 10,
                 ),
                 Text(
-                  'The Secret Coffee Shop',
+                  "${widget.plan.title}",
                   style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
@@ -154,5 +161,40 @@ class _PlanningItemState extends State<PlanningItem> {
         ),
       ),
     );
+  }
+
+  Future<bool> delete() async {
+    // API endpoint and request
+    final url =
+        Uri.parse('http://10.0.2.2:3000/plans/delete/${widget.plan.id}');
+
+    final token = await getToken();
+
+    print(widget.plan.id);
+    final response = await http.delete(
+      url,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer $token',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => CalendarScreen(),
+        ),
+      );
+
+      return true; // Successful update
+    } else {
+      print(response.statusCode);
+      // Handle error
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to delete deal')),
+      );
+      return false; // Failed update
+    }
   }
 }

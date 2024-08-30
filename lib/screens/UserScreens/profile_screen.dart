@@ -1,13 +1,17 @@
+import 'dart:convert';
+
 import 'package:dealdiscover/model/pub.dart';
 import 'package:dealdiscover/screens/UserScreens/EditProfile_screen.dart';
 import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
 import 'package:dealdiscover/screens/authentication/signin_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:dealdiscover/widgets/DealCard.dart';
+import 'package:dealdiscover/widgets/FavoriteCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:jwt_decoder/jwt_decoder.dart'; // Import jwt_decoder
+import 'package:http/http.dart' as http; // Import http package
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -19,35 +23,71 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   bool isLoading1 = false;
   bool isLoading2 = false;
-  List<Pub> filteredPubs = [];
+  Map<String, dynamic>? userData; // Store user details here
+  String? userId; // Store userId here
+  List<dynamic> filteredPubs = [];
   Future<String> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token') ?? "";
   }
 
-  Future<void> _getUserDetails() async {
+  Future<void> _getUser() async {
+    print("Starting to fetch user details...");
+
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('token') ?? "";
-    print("helloo");
+
     if (token.isNotEmpty) {
-      // Decode the token
-      final decodedToken = JwtDecoder.decode(token);
-      print(decodedToken);
+      try {
+        // Decode the token
+        final decodedToken = JwtDecoder.decode(token);
+        userId = decodedToken['userId'];
+        print("User ID: $userId");
+
+        if (userId != null) {
+          // Make the HTTP request to fetch user details
+          final response = await http.get(
+            Uri.parse(
+                'http://10.0.2.2:3000/admin/users/$userId'), // Replace with your API endpoint
+          );
+
+          if (response.statusCode == 200) {
+            print("User details: ${response.body}");
+
+            setState(() {
+              userData = jsonDecode(response.body);
+            });
+            // Handling the conversion issue in favouritePubs
+            filteredPubs = (userData?['favouritePubs'] as List).map((pubJson) {
+              // Convert each entry to a Map<String, dynamic> if it's not already
+              Map<String, dynamic> pubMap;
+              if (pubJson is Map<String, dynamic>) {
+                pubMap = pubJson;
+              } else if (pubJson is String) {
+                pubMap = jsonDecode(pubJson) as Map<String, dynamic>;
+              } else {
+                throw Exception("Unexpected data format");
+              }
+
+              return Pub.fromMap(pubMap);
+            }).toList();
+
+            print(filteredPubs.length);
+          } else {
+            print('Failed to load user details: ${response.statusCode}');
+          }
+        }
+      } catch (e) {
+        print('Error fetching user details: $e');
+      }
     }
-    //  Navigator.push(
-    //                             context,
-    //                             MaterialPageRoute(
-    //                                 builder: (context) => EditProfileScreen()),
-    //                           );
   }
 
-  /* @override
+  @override
   void initState() {
+    _getUser();
     super.initState();
-    filteredPubs = listOfIPubs
-        .where((pub) => pub.state != null && pub.state == 'offre')
-        .toList();
-  }*/
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -107,17 +147,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       ClipRRect(
-                        borderRadius: BorderRadius.circular(90),
-                        child: Image.asset(
-                          'assets/images/user_pic.png',
+                        borderRadius: BorderRadius.circular(
+                            90), // Adjust the radius as needed
+                        child: Image(
                           width: 180,
                           height: 180,
-                          fit: BoxFit.cover,
+                          fit: BoxFit.cover, // Adjust the fit as needed
+                          image: userData != null && userData?['image'] != null
+                              ? NetworkImage(
+                                  'http://10.0.2.2:3000/images/${userData?['image']}')
+                              : const AssetImage('assets/images/bruscetta.jpg')
+                                  as ImageProvider,
                         ),
                       ),
                       SizedBox(height: 40),
                       Text(
-                        "Oumaima Esghir",
+                        "${userData?["username"]} ${userData?["lastname"]}",
                         style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
@@ -129,7 +174,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           height: 60,
                           width: 250,
                           child: TextButton(
-                            onPressed: () => _getUserDetails,
+                            onPressed: () {
+                               Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => EditProfileScreen(userData: userData)),
+    );
+                            },
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
                                   MyColors.btnColor),
@@ -181,20 +232,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         SizedBox(height: 20),
                         // Display DealCard widgets here
-                        /*   SingleChildScrollView(
+                        SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
                           child: Row(
                             children: filteredPubs.map((pub) {
                               return Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 5.0),
-                                child: DealCard(
+                                child: FavoriteCard(
                                   pub: pub,
                                 ),
                               );
                             }).toList(),
                           ),
-                        ),*/
+                        ),
                       ],
                     ),
                   ),

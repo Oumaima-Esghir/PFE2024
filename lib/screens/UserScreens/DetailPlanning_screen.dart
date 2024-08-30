@@ -1,3 +1,4 @@
+import 'package:dealdiscover/model/plan.dart';
 import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
 import 'package:dealdiscover/screens/UserScreens/calendar_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
@@ -6,7 +7,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class DetailPlanningScreen extends StatefulWidget {
-  const DetailPlanningScreen({super.key});
+  final Plan plan;
+  const DetailPlanningScreen({super.key, required this.plan});
 
   @override
   State<DetailPlanningScreen> createState() => _DetailPlanningScreenState();
@@ -88,7 +90,7 @@ class _DetailPlanningScreenState extends State<DetailPlanningScreen> {
                         ),
                       ),
                       child: Text(
-                        "Birthday Going Out",
+                        " ${widget.plan.title}",
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
@@ -149,7 +151,7 @@ class _DetailPlanningScreenState extends State<DetailPlanningScreen> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text("2024-07-28"),
+                              Text(" ${widget.plan.dateFrom}"),
                             ],
                           ),
                         ),
@@ -170,7 +172,7 @@ class _DetailPlanningScreenState extends State<DetailPlanningScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "2024-07-28",
+                                " ${widget.plan.dateTo}",
                                 style: TextStyle(fontSize: 16),
                               ),
                             ],
@@ -199,7 +201,7 @@ class _DetailPlanningScreenState extends State<DetailPlanningScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "12:30",
+                                " ${widget.plan.timeFrom}",
                                 style: TextStyle(fontSize: 16),
                               ),
                             ],
@@ -222,7 +224,7 @@ class _DetailPlanningScreenState extends State<DetailPlanningScreen> {
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
                               Text(
-                                "17:30",
+                                " ${widget.plan.timeTo}",
                                 style: TextStyle(fontSize: 16),
                               ),
                             ],
@@ -254,7 +256,7 @@ class _DetailPlanningScreenState extends State<DetailPlanningScreen> {
                         ),
                       ),
                       child: Text(
-                        "1",
+                        " ${widget.plan.nb_persons}",
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
@@ -282,7 +284,7 @@ class _DetailPlanningScreenState extends State<DetailPlanningScreen> {
                         ),
                       ),
                       child: Text(
-                        "Add Reminder",
+                        " ${widget.plan.reminder}",
                         style: TextStyle(fontSize: 16),
                       ),
                     ),
