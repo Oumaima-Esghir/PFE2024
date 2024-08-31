@@ -214,20 +214,20 @@ class _PartnerDealDetailsScreenState extends State<PartnerDealDetailsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             SizedBox(height: 20),
-                            ListView.separated(
-                              shrinkWrap: true,
-                              physics: NeverScrollableScrollPhysics(),
-                              itemCount: 1,
-                              separatorBuilder: (context, index) {
-                                // Add space between comments
-                                return SizedBox(
-                                    height: 5); // Adjust the height as needed
-                              },
-                              itemBuilder: (context, index) {
-                                // Replace 'This is a sample comment.' with actual comment data
-                                return CommentItemWidget.CommentItem();
-                              },
-                            ),
+                            // ListView.separated(
+                            //   shrinkWrap: true,
+                            //   physics: NeverScrollableScrollPhysics(),
+                            //   itemCount: 1,
+                            //   separatorBuilder: (context, index) {
+                            //     // Add space between comments
+                            //     return SizedBox(
+                            //         height: 5); // Adjust the height as needed
+                            //   },
+                            //   itemBuilder: (context, index) {
+                            //     // Replace 'This is a sample comment.' with actual comment data
+                            //     return CommentItemWidget.CommentItem();
+                            //   },
+                            // ),
                           ],
                         ),
                       ),

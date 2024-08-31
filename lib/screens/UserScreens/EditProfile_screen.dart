@@ -458,7 +458,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           width: 350,
                           height: 55,
                           decoration: BoxDecoration(
-                            color: MyColors.btnBorderColor,
+                            color: MyColors.btnColor,
                             borderRadius: BorderRadius.circular(10.0),
                           ),
                           child: Center(

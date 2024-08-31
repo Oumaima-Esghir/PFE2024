@@ -28,7 +28,6 @@ class ClientService extends Client {
       List<Pub> pubs =
           data.map((pub) => Pub.fromMap(pub as Map<String, dynamic>)).toList();
 
-      print("zzzz" + pubs.toString());
       return pubs;
     } else {
       throw Exception('Failed to load pubs');
@@ -158,7 +157,84 @@ class ClientService extends Client {
 
     return response;
   }
+
+  //addFavorites
+  Future<http.Response> addFavourite(String placeId) async {
+    final url = Uri.parse('$baseUrl/users/favourites/add/$placeId');
+
+    final headers = await getHeaders(); // Get headers with token
+    print(headers.toString());
+
+    return await http.post(
+      url,
+      headers: headers,
+    );
+  }
+
+  Future<List<String>> getFavorites() async {
+    final url = Uri.parse('$baseUrl/users/favourites');
+    // Replace with your actual endpoint
+
+    final headers = await getHeaders(); // Get headers with token
+    print(headers.toString());
+
+    final response = await http.get(url, headers: headers);
+    print("helllllllllllllllllllllllllo");
+    if (response.statusCode == 200) {
+      print("helllllllllllllllllllllllllo");
+      print(response.body);
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      final favouritePlacesJson = data['data'] as List<dynamic>;
+      return favouritePlacesJson.cast<String>();
+    } else {
+      throw Exception('Failed to load favourite places');
+    }
+  }
+
+  Future<http.Response> removeFavorite(String placeId) async {
+    final url = Uri.parse('$baseUrl/users/favourites/remove/$placeId');
+
+    final headers = await getHeaders(); // Get headers with token
+    print(headers.toString());
+
+    return await http.delete(
+      url,
+      headers: headers,
+    );
+  }
+
+  Future<http.Response> createRate(int rate, String placeId) async {
+    final url = Uri.parse('$baseUrl/rates/$placeId');
+    final headers = await getHeaders();
+    final body = json.encode({
+      // 'id': rate.id.toString(),
+      'rate': rate,
+      // 'user_id': rate.user_id.toString(),
+      // 'rated_id': placeId, // Corrected to use widget.place.id
+      // 'review': rate.review,
+      // 'rated_name': rate.rated_name, // Assuming this is the correct field
+    });
+
+    return await http.post(url, headers: headers, body: body);
+  }
+
+  Future<int> getRates(String placeId) async {
+    final url = Uri.parse('$baseUrl/rates/$placeId');
+    final headers = await getHeaders();
+    final response = await http.get(url, headers: headers);
+
+    if (response.statusCode == 200) {
+      print("rateeee");
+      final data = json.decode(response.body) as Map<String, dynamic>;
+      final favouritePlacesJson = data['data'] as List<dynamic>;
+      print(favouritePlacesJson[0]['rate']);
+      return favouritePlacesJson[0]['rate'];
+    } else {
+      throw Exception('Failed to load rates');
+    }
+  }
 }
+ 
   /*
 //getplaces
   /*Future<List<Place>> getPlaces() async {
@@ -208,8 +284,9 @@ class ClientService extends Client {
   /*
  //getrates
   Future<List<Rate>> getRates() async {
-    final url = Uri.parse('$baseUrl/rates/page');
-    final response = await http.get(url);
+     final url = Uri.parse('$baseUrl${EndPoints.getRates(placeId)}');
+  final headers = await getHeaders();
+  final response = await http.get(url, headers: headers);
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -274,22 +351,23 @@ class ClientService extends Client {
 
     final body = json.encode({'placeId': placeId});
     return await http.patch(url, headers: headers, body: body);
-  }
+  }*/
 
   //addFavorites
-  Future<http.Response> addFavourite(String placeId) async {
-    final url = Uri.parse('$baseUrl${EndPoints.addfavorites}');
-    final headers = await getHeaders(); // Get headers with token
-    print(headers.toString());
-    final body = json.encode({
-      'placeId': placeId,
-    });
+  // Future<http.Response> addFavourite(String placeId) async {
+  //   final url = Uri.parse(`$baseUrl/users/favourites/add/`);
+  //    Uri.parse('$baseUrl/partenaires/signin');
+  //   final headers = await getHeaders(); // Get headers with token
+  //   print(headers.toString());
+  //   final body = json.encode({
+  //     'placeId': placeId,
+  //   });
 
-    return await http.patch(url, headers: headers, body: body);
-  }
-}
+  //   return await http.patch(url, headers: headers, body: body);
+  // }
 
-*/
+
+
   /*Future<http.Response> login(Login login) {
     
     return post(EndPoints.login, body: login.toMap(), useToken: false);

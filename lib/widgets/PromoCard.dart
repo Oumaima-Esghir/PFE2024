@@ -12,6 +12,13 @@ class PromoCard extends StatefulWidget {
 }
 
 class _PromoCardCardState extends State<PromoCard> {
+  @override
+  void initState() {
+    print("heeeeeeeeeee");
+    print(widget.pub);
+    super.initState();
+  }
+
   final String rating = '4.5';
   bool isFavorited = false;
 

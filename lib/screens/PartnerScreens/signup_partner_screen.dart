@@ -33,7 +33,7 @@ class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
   bool _isLoading = false;
   String? _errorMessage;
 
-  Future<void> _partnersignup() async {
+  Future<void> _signup() async {
     if (_email.isEmpty || !_isValidEmail(_email)) {
       setState(() {
         _emailError = 'Please enter a valid email address';
@@ -84,12 +84,12 @@ class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
         String message =
             responseData['message']; // Extract message from the response
         if (message == "Partner successfully created!") {
-          String partenaire_id = responseData['partenaire']
-              ['id']; // Extract user ID from the response
-          String token = responseData['partenaire']
-              ['token']; // Extract token from the response
+          String userId =
+              responseData['user']['id']; // Extract user ID from the response
+          String token =
+              responseData['user']['token']; // Extract token from the response
 
-          await storeUserInfo(partenaire_id, _nameController.text, token);
+          await storeUserInfo(userId, _nameController.text, token);
 
           Navigator.pushReplacement(
             context,
@@ -353,8 +353,7 @@ class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
                                   width:
                                       double.infinity, // Make button full width
                                   child: TextButton(
-                                    onPressed:
-                                        _isLoading ? null : _partnersignup,
+                                    onPressed: _isLoading ? null : _signup,
                                     style: ButtonStyle(
                                       backgroundColor:
                                           MaterialStateProperty.all<Color>(

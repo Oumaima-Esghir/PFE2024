@@ -3,12 +3,15 @@ import 'package:dealdiscover/model/pub.dart';
 import 'package:dealdiscover/screens/UserScreens/accueil_screen.dart';
 import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
 import 'package:dealdiscover/widgets/AllDealsCard.dart' as AllDealsCardWidget;
+import 'package:dealdiscover/widgets/AllDealsCard.dart';
+import 'package:dealdiscover/widgets/DealCard.dart';
 import 'package:dealdiscover/widgets/PromoCard.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SeeAllDealsScreen extends StatefulWidget {
-  const SeeAllDealsScreen({super.key});
+  final Future<List<Pub>>? bestDealsPubs;
+  const SeeAllDealsScreen({super.key, this.bestDealsPubs});
 
   @override
   State<SeeAllDealsScreen> createState() => _SeeAllDealsScreenState();
@@ -17,14 +20,16 @@ class SeeAllDealsScreen extends StatefulWidget {
 class _SeeAllDealsScreenState extends State<SeeAllDealsScreen> {
   bool isLoading = false;
   late Future<List<Pub>>? futurePubs;
- late Future<List<Pub>>? DealsPubs;
- ClientService clientService = ClientService();
+  late Future<List<Pub>>? DealsPubs;
+
+  ClientService clientService = ClientService();
 
   @override
   void initState() {
     super.initState();
     futurePubs = clientService.getPubs();
-    DealsPubs = futurePubs?.then((pubs) => pubs.where((pub) => pub.state == 'offre').toList());
+    DealsPubs = futurePubs
+        ?.then((pubs) => pubs.where((pub) => pub.state == 'offre').toList());
   }
 
   @override
@@ -68,48 +73,50 @@ class _SeeAllDealsScreenState extends State<SeeAllDealsScreen> {
               children: [
                 SizedBox(height: 120),
                 Container(
-                  width: double
-                      .infinity, // Ensures the text takes the full width of the container
+                  width: double.infinity,
                   child: Text(
                     'All Deals',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
-                    textAlign: TextAlign.left, // Aligns the text to the start
+                    textAlign: TextAlign.left,
                   ),
                 ),
-                SizedBox(
-                  height: 20,
-                ),
-                  FutureBuilder<List<Pub>>(
-                  future: DealsPubs,
+                SizedBox(height: 20),
+                FutureBuilder<List<Pub>>(
+                  future: widget.bestDealsPubs,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return CircularProgressIndicator();
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (snapshot.hasData) {
-                      return SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: snapshot.data!.map((pub) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                              child: PromoCard(
-                                pub: pub,
-                              ),
-                            );
-                          }).toList(),
+                      return Container(
+                        height:
+                            850, // Set a fixed height for the horizontal scroll view
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Column(
+                            children: snapshot.data!.map((pub) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 5.0),
+                                child: PromoCard(
+                                  pub: pub,
+                                ),
+                              );
+                            }).toList(),
+                          ),
                         ),
                       );
-                      } else {
+                    } else {
                       return Text('No deals available');
                     }
                   },
                 ),
               ],
-      ),
+            ),
           ),
         ),
       ),

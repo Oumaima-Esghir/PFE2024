@@ -1,7 +1,17 @@
-import 'package:dealdiscover/utils/colors.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 
+import 'package:dealdiscover/model/comment.dart';
+import 'package:dealdiscover/utils/colors.dart';
+
 class CommentItem extends StatefulWidget {
+  final Comment comments;
+
+  const CommentItem({
+    Key? key,
+    required this.comments,
+  }) : super(key: key);
+
   @override
   _CommentItemState createState() => _CommentItemState();
 }
@@ -19,7 +29,6 @@ class _CommentItemState extends State<CommentItem> {
           width: 2,
         ),
       ),
-      // Adjust card properties as needed
       child: ListTile(
         leading: Container(
           decoration: BoxDecoration(
@@ -28,20 +37,18 @@ class _CommentItemState extends State<CommentItem> {
                 Border.all(color: Colors.white, width: 2), // Add white border
           ),
           child: CircleAvatar(
-            // Display user's image
-            backgroundImage: AssetImage(
-              'assets/images/user_pic.png',
-            ),
+            backgroundImage: widget.comments.pic.isNotEmpty
+                ? NetworkImage(
+                    'http://10.0.2.2:3000/images/${widget.comments.pic}') // Use NetworkImage for URLs
+                : AssetImage('assets/images/user_pic.png') as ImageProvider,
           ),
         ),
         title: Text(
-          // Display username
-          'Oumaima Esghir',
+          widget.comments.username,
           style: TextStyle(fontWeight: FontWeight.bold),
         ),
         subtitle: Text(
-          // Display comment text
-          'Nice Hotel!!',
+          widget.comments.text,
         ),
       ),
     );

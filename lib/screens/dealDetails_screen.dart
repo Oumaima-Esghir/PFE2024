@@ -1,7 +1,9 @@
+import 'dart:convert';
+
 import 'package:dealdiscover/client/client_service.dart';
+import 'package:dealdiscover/model/comment.dart';
 import 'package:dealdiscover/model/pub.dart';
 import 'package:dealdiscover/model/rates.dart';
-import 'package:dealdiscover/model/user.dart';
 import 'package:dealdiscover/screens/UserScreens/AddPlanning_screen.dart';
 import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
 import 'package:dealdiscover/screens/UserScreens/partner_profile_screen.dart';
@@ -10,6 +12,7 @@ import 'package:dealdiscover/widgets/CommentItem.dart' as CommentItemWidget;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
 
 class DealDetailsScreen extends StatefulWidget {
   final String? pubId;
@@ -27,37 +30,47 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
   bool isFavorited = false;
   int rating = 0;
   int totalRatings = 0;
-  bool hasUserRated = false; // Track if user has rated in this session
-  late ClientService clientService;
-// Initialisez votre service de taux
+  bool hasUserRated = false;
+  late ClientService clientService; // Initialize your service
+  late List<Comment> comments = [];
+  late TextEditingController _commentController;
 
+  @override
   @override
   void initState() {
     super.initState();
-    // fetchTotalRatings();
-    // checkIfUserRated();
-    //Get Favorite places then check if current postId exists in favourite
-    //if place exists isFavoited = true else false
-    // _loadFavoritePlaces();
-    clientService = ClientService();
+    clientService = ClientService(); // Initialize your service here
+    _commentController = TextEditingController();
+    print(widget.pub);
+    _loadFavoritePlaces();
+    rating = 0;
+    checkIfUserRated();
+    getComments();
   }
 
-  /* Future<void> fetchTotalRatings() async {
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
+  Future<void> fetchTotalRatings() async {
     try {
-      final rates = await clientService.getRates(widget.placeId);
-      setState(() {
-        totalRatings = rates.length;
-      });
+      // final rates = await clientService.getRates(widget.pub.id!);
+      // setState(() {
+      //   totalRatings = rates.length;
+      // });
     } catch (e) {
       print('Failed to fetch total ratings: $e');
     }
   }
+
   Future<void> checkIfUserRated() async {
     String userId = await getUserId();
     try {
-      final rates = await clientService.getRates(widget.placeId);
+      final rates = await clientService.getRates(widget.pub.id!);
       setState(() {
-        hasUserRated = rates.any((rate) => rate.user_id == userId);
+        rating = rates;
       });
     } catch (e) {
       print('Failed to fetch rates: $e');
@@ -79,17 +92,17 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
 
     String userId = await getUserId();
 
-    Rate rate = Rate(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      rate: rating,
-      user_id: userId,
-      rated_id: widget.place.id,
-      review: 'Great place!',
-      rated_name: widget.place.name,
-    );
+    // Rate rate = Rate(
+    //   id: DateTime.now().millisecondsSinceEpoch.toString(),
+    //   rate: rating,
+    //   user_id: userId,
+    //   rated_id: widget.pub.id!,
+    //   review: 'Great place!',
+    //   rated_name: widget.pub.title ?? 'No Title',
+    // );
 
     try {
-      await clientService.createRate(rate, widget.place.id);
+      await clientService.createRate(rating, widget.pub.id!);
       setState(() {
         totalRatings++;
         hasUserRated = true;
@@ -105,11 +118,62 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
     }
   }
 
+  Future<String> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token') ?? "";
+  }
+
+  void _addComment() async {
+    final commentText = _commentController.text.trim();
+    if (commentText.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter a comment')),
+      );
+      return;
+    }
+
+    try {
+      final url = Uri.parse('http://10.0.2.2:3000/comments/${widget.pub.id}');
+      final token = await getToken();
+
+      final response = await http.post(
+        url,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({
+          'text': commentText,
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        _commentController.clear(); // Clear the input field
+        await getComments(); // Refresh the comment list
+        setState(() {}); // Rebuild the UI with new comments
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Comment added successfully!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to add comment')),
+        );
+      }
+    } catch (e) {
+      print('Error adding comment: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error adding comment: $e')),
+      );
+    }
+  }
+
   void _loadFavoritePlaces() async {
+    print("Loading favorite places...");
     try {
       final favouritePlaces = await clientService.getFavorites();
+
       setState(() {
-        isFavorited = favouritePlaces.contains(widget.place.id);
+        isFavorited = favouritePlaces.contains(widget.pub.id);
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -122,9 +186,10 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
     setState(() {
       isFavorited = !isFavorited; // Optimistically update the UI
     });
+
     if (isFavorited) {
       try {
-        final response = await clientService.addFavourite(widget.place.id);
+        final response = await clientService.addFavourite(widget.pub.id!);
 
         if (response.statusCode != 200) {
           // If the server fails, revert the UI change
@@ -150,19 +215,16 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
         );
       }
     } else {
-      //remove function
       try {
-        final response = await clientService.removeFavorite(widget.place.id);
+        final response = await clientService.removeFavorite(widget.pub.id!);
 
         if (response.statusCode != 200) {
-          // If the server fails, revert the UI change
           setState(() {
             isFavorited = !isFavorited;
           });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content:
-                    Text('Failed to update favorite status: ${response.body}')),
+                content: Text('Failed to remove favorite: ${response.body}')),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -174,11 +236,40 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
           isFavorited = !isFavorited;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating favorite status: $e')),
+          SnackBar(content: Text('Error removing favorite status: $e')),
         );
       }
     }
-  }*/
+  }
+
+  Future<List<Comment>> getComments() async {
+    print('**********');
+    final url = Uri.parse(
+        'http://10.0.2.2:3000/comments/${widget.pub.id}'); // Replace with your actual endpoint
+
+    final response = await http.get(url);
+    print('comments');
+    print(response.body);
+    if (response.statusCode == 200) {
+      print("yes");
+      final Map<String, dynamic> jsonResponse = json.decode(response.body);
+
+      // Extract the list of comments from the "data" field
+      final List<dynamic> data = jsonResponse['data'];
+
+      // Map each item in the list to a Comment object
+      comments = data
+          .map((comment) => Comment.fromMap(comment as Map<String, dynamic>))
+          .toList();
+
+      print('comments');
+      print(comments);
+
+      return comments;
+    } else {
+      throw Exception('Failed to load pubs');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +311,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
               children: [
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  height: 850,
+                  height: 1000,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -237,16 +328,12 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                           fit: BoxFit.cover,
                         ),
                       ),
-
-                      SizedBox(
-                        height: 10,
-                      ),
+                      SizedBox(height: 10),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           ElevatedButton(
                             onPressed: () {
-                              // Handle tap on the text
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
@@ -258,24 +345,19 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
                                   Colors.white),
-                              elevation: MaterialStateProperty.all<double>(
-                                  1), // Remove elevation
+                              elevation: MaterialStateProperty.all<double>(1),
                               shape: MaterialStateProperty.all<
                                   RoundedRectangleBorder>(
                                 RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      5), // Set border radius
+                                  borderRadius: BorderRadius.circular(5),
                                   side: BorderSide(
-                                      color: MyColors
-                                          .btnBorderColor), // Set border color
+                                      color: MyColors.btnBorderColor),
                                 ),
                               ),
                             ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                vertical: 10,
-                                horizontal: 20,
-                              ),
+                                  vertical: 10, horizontal: 20),
                               child: Text(
                                 widget.pub.title ?? 'No Title',
                                 style: TextStyle(
@@ -286,17 +368,17 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                               ),
                             ),
                           ),
-                          SizedBox(height: 2), // Add space between the two rows
+                          SizedBox(height: 2),
                           Row(
                             children: [
-                              Spacer(), // Pushes the button to the left
+                              Spacer(),
                               GestureDetector(
-                                // onTap: _toggleFavorite,
+                                onTap: _toggleFavorite,
                                 child: Padding(
                                   padding: const EdgeInsets.all(5),
                                   child: Image.asset(
                                     isFavorited
-                                        ? 'assets/images/fav1.png' // Change the image path based on the state
+                                        ? 'assets/images/fav1.png'
                                         : 'assets/images/fav0.png',
                                     width: 80,
                                     height: 80,
@@ -307,8 +389,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                           ),
                         ],
                       ),
-
-                      SizedBox(height: 5), // Add spacing between rows
+                      SizedBox(height: 5),
                       Row(
                         children: [
                           Padding(
@@ -332,14 +413,14 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                             children: List.generate(
                               5,
                               (index) => GestureDetector(
-                                /*  onTap: hasUserRated
+                                onTap: hasUserRated
                                     ? null
                                     : () {
                                         setState(() {
                                           rating = index + 1;
                                         });
                                         createRate(rating);
-                                      },*/
+                                      },
                                 child: Icon(
                                   Icons.star,
                                   color: index < rating
@@ -359,9 +440,6 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                             ),
                           ),
                           SizedBox(width: 5),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10),
-                          ),
                           Text(
                             '($totalRatings reviews)',
                             style: TextStyle(
@@ -372,10 +450,8 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                           SizedBox(width: 15),
                         ],
                       ),
-
                       Padding(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 20), // Add horizontal margin
+                        padding: EdgeInsets.symmetric(horizontal: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -384,12 +460,11 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                               alignment: Alignment.centerRight,
                               child: TextButton(
                                 onPressed: () {
-                                  // Add your button onPressed logic here
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            AddPlanningScreen()),
+                                        builder: (context) => AddPlanningScreen(
+                                            id: widget.pub.id)),
                                   );
                                 },
                                 style: ButtonStyle(
@@ -404,17 +479,13 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                                     RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(10),
                                       side: BorderSide(
-                                        color: Colors.white,
-                                        width: 4,
-                                      ), // Add white border
+                                          color: Colors.white, width: 4),
                                     ),
                                   ),
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
-                                      vertical: 10,
-                                      horizontal:
-                                          20), // Adjust padding as needed
+                                      vertical: 10, horizontal: 20),
                                   child: Text(
                                     'Add To Planning',
                                     style: TextStyle(fontSize: 16),
@@ -425,15 +496,14 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                             ListView.separated(
                               shrinkWrap: true,
                               physics: NeverScrollableScrollPhysics(),
-                              itemCount: 1,
+                              itemCount: comments
+                                  .length, // <- Correctly set the item count
                               separatorBuilder: (context, index) {
-                                // Add space between comments
-                                return SizedBox(
-                                    height: 5); // Adjust the height as needed
+                                return SizedBox(height: 5);
                               },
                               itemBuilder: (context, index) {
-                                // Replace 'This is a sample comment.' with actual comment data
-                                return CommentItemWidget.CommentItem();
+                                return CommentItemWidget.CommentItem(
+                                    comments: comments[index]);
                               },
                             ),
                           ],
@@ -444,56 +514,44 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  height: 300,
+                  height: 200,
                   child: Padding(
-                    padding: EdgeInsets.only(
-                      left: 10,
-                      right: 10,
-                    ),
-                    // Adjust the left margin as needed
+                    padding: EdgeInsets.only(left: 10, right: 10),
                     child: Center(
                       child: TextField(
+                        controller: _commentController,
                         decoration: InputDecoration(
                           contentPadding: EdgeInsets.symmetric(
-                              vertical: 25,
-                              horizontal: 25), // Adjust padding as needed
-                          hintText: "write your comment",
+                              vertical: 25, horizontal: 25),
+                          hintText: "Write your comment",
                           filled: true,
                           fillColor: MyColors.backbtn1,
                           enabledBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: MyColors.btnColor, // Adjust border color
-                              width: 1, // Adjust border width
-                            ),
+                            borderSide:
+                                BorderSide(color: MyColors.btnColor, width: 1),
                             borderRadius: BorderRadius.circular(50),
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(
-                              color: MyColors
-                                  .btnBorderColor, // Adjust border color
-                              width: 1, // Adjust border width
-                            ),
+                                color: MyColors.btnBorderColor, width: 1),
                             borderRadius: BorderRadius.circular(50),
                           ),
                           suffixIcon: Container(
                             margin: EdgeInsets.only(right: 7),
-                            width: 60, // Adjust the size of the circular button
+                            width: 60,
                             height: 60,
                             decoration: BoxDecoration(
                               shape: BoxShape.circle,
-                              color: MyColors
-                                  .backbtn1, // Set color as transparent to show the border
+                              color: MyColors.backbtn1,
                               border: Border.all(
-                                color: MyColors.btnColor, // Set border color
-                                width: 1, // Adjust border width as needed
-                              ),
+                                  color: MyColors.btnColor, width: 1),
                             ),
                             child: ClipOval(
                               child: Material(
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: () {
-                                    // Add your logic here for button press
+                                    _addComment();
                                   },
                                   child: Image.asset(
                                     'assets/images/send.png',

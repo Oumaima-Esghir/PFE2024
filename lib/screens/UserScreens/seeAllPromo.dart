@@ -8,7 +8,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 class SeeAllPromotionsScreen extends StatefulWidget {
-  const SeeAllPromotionsScreen({super.key});
+  final Future<List<Pub>>? bestDealsPubs;
+
+  const SeeAllPromotionsScreen({super.key, this.bestDealsPubs});
 
   @override
   State<SeeAllPromotionsScreen> createState() => _SeeAllDealsScreenState();
@@ -17,14 +19,15 @@ class SeeAllPromotionsScreen extends StatefulWidget {
 class _SeeAllDealsScreenState extends State<SeeAllPromotionsScreen> {
   bool isLoading = false;
   late Future<List<Pub>>? futurePubs;
- late Future<List<Pub>>? PromoPubs;
- ClientService clientService = ClientService();
+  late Future<List<Pub>>? PromoPubs;
+  ClientService clientService = ClientService();
 
   @override
   void initState() {
     super.initState();
     futurePubs = clientService.getPubs();
-    PromoPubs = futurePubs?.then((pubs) => pubs.where((pub) => pub.state == 'promo').toList());
+    PromoPubs = futurePubs
+        ?.then((pubs) => pubs.where((pub) => pub.state == 'promo').toList());
   }
 
   @override
@@ -32,8 +35,8 @@ class _SeeAllDealsScreenState extends State<SeeAllPromotionsScreen> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
-        automaticallyImplyLeading: false,
         backgroundColor: Colors.transparent,
+        automaticallyImplyLeading: false,
         actions: [
           GestureDetector(
             onTap: () {
@@ -66,44 +69,46 @@ class _SeeAllDealsScreenState extends State<SeeAllPromotionsScreen> {
             padding: EdgeInsets.all(8),
             child: Column(
               children: [
-                SizedBox(height: 80),
+                SizedBox(height: 120),
                 Container(
-                  width: double
-                      .infinity, // Ensures the text takes the full width of the container
+                  width: double.infinity,
                   child: Text(
                     'All Promotions',
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                     ),
-                    textAlign: TextAlign.left, // Aligns the text to the start
+                    textAlign: TextAlign.left,
                   ),
                 ),
-                SizedBox(
-                  height: 15,
-                ),
-               FutureBuilder<List<Pub>>(
-                  future: PromoPubs,
+                SizedBox(height: 20),
+                FutureBuilder<List<Pub>>(
+                  future: widget.bestDealsPubs,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return CircularProgressIndicator();
                     } else if (snapshot.hasError) {
                       return Text('Error: ${snapshot.error}');
                     } else if (snapshot.hasData) {
-                      return SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: snapshot.data!.map((pub) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                              child: PromoCard(
-                                pub: pub,
-                              ),
-                            );
-                          }).toList(),
+                      return Container(
+                        height:
+                            850, // Set a fixed height for the horizontal scroll view
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.vertical,
+                          child: Column(
+                            children: snapshot.data!.map((pub) {
+                              return Padding(
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 5.0),
+                                child: PromoCard(
+                                  pub: pub,
+                                ),
+                              );
+                            }).toList(),
+                          ),
                         ),
                       );
-                      } else {
+                    } else {
                       return Text('No deals available');
                     }
                   },

@@ -27,11 +27,21 @@ class _AccueilScreenState extends State<AccueilScreen> {
   //List<Pub> PromoPubs = [];
 
   @override
-   void initState() {
+  void initState() {
     super.initState();
     futurePubs = clientService.getPubs();
-    bestDealsPubs = futurePubs?.then((pubs) => pubs.where((pub) => pub.state == 'offre').toList());
-    topPromotionsPubs = futurePubs?.then((pubs) => pubs.where((pub) => pub.state == 'promo').toList());
+
+    bestDealsPubs = futurePubs
+        ?.then((pubs) => pubs.where((pub) => pub.state == 'offre').toList());
+    topPromotionsPubs = futurePubs
+        ?.then((pubs) => pubs.where((pub) => pub.state == 'promo').toList());
+    Future<List<Pub>> pubsFuture = clientService.getPubs(); // Exemple de futur
+
+    pubsFuture.then((List<Pub> pubs) {
+      for (var pub in pubs) {}
+    }).catchError((error) {
+      print('Error occurred: $error');
+    });
   }
 
   bool isLoading = false;
@@ -149,8 +159,8 @@ class _AccueilScreenState extends State<AccueilScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) =>
-                                          SeeAllDealsScreen()),
+                                      builder: (context) => SeeAllDealsScreen(
+                                          bestDealsPubs: bestDealsPubs)),
                                 );
                               },
                               child: Text(
@@ -166,34 +176,36 @@ class _AccueilScreenState extends State<AccueilScreen> {
                             ),
                           ],
                         ),
-                       SizedBox(height: 20),
-                FutureBuilder<List<Pub>>(
-                  future: bestDealsPubs,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else if (snapshot.hasData) {
-                      return SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: Row(
-                          children: snapshot.data!.map((pub) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                              child: DealCard(
-                                pub: pub,
-                              ),
-                            );
-                          }).toList(),
+                        SizedBox(height: 20),
+                        FutureBuilder<List<Pub>>(
+                          future: bestDealsPubs,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return CircularProgressIndicator();
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (snapshot.hasData) {
+                              return SingleChildScrollView(
+                                scrollDirection: Axis.horizontal,
+                                child: Row(
+                                  children: snapshot.data!.map((pub) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5.0),
+                                      child: DealCard(
+                                        pub: pub,
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              );
+                            } else {
+                              return Text('No deals available');
+                            }
+                          },
                         ),
-                      );
-                    } else {
-                      return Text('No deals available');
-                    }
-                  },
-                ),
-                SizedBox(height: 20),
+                        SizedBox(height: 20),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
@@ -210,7 +222,8 @@ class _AccueilScreenState extends State<AccueilScreen> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          SeeAllPromotionsScreen()),
+                                          SeeAllPromotionsScreen(
+                                              bestDealsPubs: bestDealsPubs)),
                                 );
                               },
                               child: Text(
@@ -226,45 +239,46 @@ class _AccueilScreenState extends State<AccueilScreen> {
                             ),
                           ],
                         ),
-                       SizedBox(height: 10),
-                FutureBuilder<List<Pub>>(
-                  future: topPromotionsPubs,
-                  builder: (context, snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return CircularProgressIndicator();
-                    } else if (snapshot.hasError) {
-                      return Text('Error: ${snapshot.error}');
-                    } else if (snapshot.hasData) {
-                      return SingleChildScrollView(
-                        scrollDirection: Axis.vertical,
-                        child: Column(
-                          children: snapshot.data!.map((pub) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 5.0),
-                              child: PromoCard(
-                                pub: pub,
-                              ),
-                            );
-                          }).toList(),
+                        SizedBox(height: 10),
+                        FutureBuilder<List<Pub>>(
+                          future: topPromotionsPubs,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return CircularProgressIndicator();
+                            } else if (snapshot.hasError) {
+                              return Text('Error: ${snapshot.error}');
+                            } else if (snapshot.hasData) {
+                              return SingleChildScrollView(
+                                scrollDirection: Axis.vertical,
+                                child: Column(
+                                  children: snapshot.data!.map((pub) {
+                                    return Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 5.0),
+                                      child: PromoCard(
+                                        pub: pub,
+                                      ),
+                                    );
+                                  }).toList(),
+                                ),
+                              );
+                            } else {
+                              return Text('No promotions available');
+                            }
+                          },
                         ),
-                      );
-                    } else {
-                      return Text('No promotions available');
-                    }
-                  },
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
         ),
-              ],
-      ),
-          ),
-        ),
       ),
     );
   }
-
 
   void loadingHandler(BuildContext context) {
     setState(() {
