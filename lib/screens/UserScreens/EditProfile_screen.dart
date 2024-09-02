@@ -1,10 +1,13 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dealdiscover/screens/UserScreens/profile_screen.dart';
+import 'package:dealdiscover/screens/menus/bottomnavbar.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfileScreen extends StatefulWidget {
@@ -31,9 +34,21 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool isLoading = false;
   int age = 25;
 
+  File? _image;
+  bool imagegeted = false;
+
   Future<String> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token') ?? "";
+  }
+
+  // Ensure the token is correctly retrieved
+  Future<Map<String, String>> getHeaders() async {
+    final token = await getToken();
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
   }
 
   Future<void> _updateProfile() async {
@@ -43,58 +58,59 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     String confirmPassword =
         _confirmPasswordController.text; // Assuming same controller
 
-    if (newPassword.isNotEmpty && confirmPassword.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('All fields are required')),
-      );
-      return;
-    }
-
-    if (newPassword.isNotEmpty && newPassword.length < 8) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('New password must be at least 8 characters long')),
-      );
-      return;
-    }
-
-    if (newPassword != confirmPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Passwords do not match')),
-      );
-      return;
-    }
-
     setState(() {
       isLoading = true;
     });
     final token = await getToken();
-    final url =
-        'http://192.168.1.7:3000/users/update'; // Replace with your API endpoint
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-    print(_userNameController.text.split(' ')[1]);
-    print(_userNameController.text.split(' ')[0]);
-    final body = jsonEncode({
-      'username': _userNameController.text.split(' ').isNotEmpty
-          ? _userNameController.text.split(' ')[0]
-          : '',
-      'lastname': _userNameController.text.split(' ').isNotEmpty
-          ? _userNameController.text.split(' ')[1]
-          : '',
-      'adress': _addressController.text,
-      // 'actualPassword': actualPassword,
-      'password': newPassword,
-    });
 
     try {
-      final response = await http.put(
-        Uri.parse(url),
-        headers: headers,
-        body: body,
-      );
+      var request = http.MultipartRequest(
+          'PUT', Uri.parse('http://192.168.1.7:3000/users/update'));
+      request.headers.addAll({
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'multipart/form-data'
+      });
+      print(_userNameController.text.split(' ')[1]);
+      print(_userNameController.text.split(' ')[0]);
+      final body = jsonEncode({
+        'username': _userNameController.text.split(' ').isNotEmpty
+            ? _userNameController.text.split(' ')[0]
+            : '',
+        'lastname': _userNameController.text.split(' ').isNotEmpty
+            ? _userNameController.text.split(' ')[1]
+            : '',
+        'adress': _addressController.text,
+        // 'actualPassword': actualPassword,
+        'password': newPassword,
+      });
+
+      if (newPassword.isNotEmpty && confirmPassword.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('All fields are required')),
+        );
+        return;
+      }
+
+      if (newPassword.isNotEmpty && newPassword.length < 8) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('New password must be at least 8 characters long')),
+        );
+        return;
+      }
+
+      if (newPassword != confirmPassword) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Passwords do not match')),
+        );
+        return;
+      }
+      if (imagegeted == true) {
+        request.files.add(
+          await http.MultipartFile.fromPath('image', _image!.path),
+        );
+      }
+      var response = await request.send();
 
       if (response.statusCode == 200) {
         // Success
@@ -134,10 +150,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       _addressController.text = widget.userData!['adress'] ?? '';
       age = widget.userData!['age'] ?? 25;
     }
+    bool imagegeted = false;
   }
 
   @override
   Widget build(BuildContext context) {
+    String imageUrl = '';
+    TimeOfDay selectedTime = TimeOfDay.now();
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -176,7 +195,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               children: [
                 Container(
                   width: 350,
-                  height: 900,
+                  height: 1500,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -190,12 +209,45 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           width: 180,
                           height: 180,
                           fit: BoxFit.cover, // Adjust the fit as needed
-                          image: widget.userData != null &&
-                                  widget.userData?['image'] != null
-                              ? NetworkImage(
-                                  'http://192.168.1.7:3000/images/${widget.userData?['image']}')
-                              : const AssetImage('assets/images/bruscetta.jpg')
+                          image: imagegeted == true
+                              ? FileImage(_image!)
+                              //widget.userData != null &&
+                              //      widget.userData?['image'] != null
+                              : NetworkImage(
+                                      'http://192.168.1.7:3000/images/${widget.userData?['image']}')
                                   as ImageProvider,
+                        ),
+                      ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          final ImagePicker _picker = ImagePicker();
+
+                          final XFile? image = await _picker.pickImage(
+                              source: ImageSource.gallery);
+                          _image = File(image!.path);
+
+                          if (image != null) {
+                            setState(() {
+                              imagegeted = true;
+                            });
+                            print("L'image: ${_image!.path}");
+                          }
+                        },
+                        style: TextButton.styleFrom(
+                          side: BorderSide(
+                              color: MyColors
+                                  .btnBorderColor), // Add a border color
+                        ),
+                        child: Text(
+                          "Edit Your Image",
+                          style: TextStyle(
+                            color: MyColors.btnBorderColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                       ),
                       SizedBox(
@@ -451,8 +503,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       SizedBox(height: 30),
                       GestureDetector(
                         onTap: () {
-                          _updateProfile();
-                          loadingHandler(context);
+                          _updateProfile;
                         },
                         child: Container(
                           width: 350,
@@ -485,21 +536,19 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   loadingHandler(BuildContext context) {
-    if (isLoading) return;
-
     setState(() {
       isLoading = true;
     });
-
-    Navigator.pop(context, {
-      'userName': _userNameController.text,
-      'address': _addressController.text,
-      'age': age,
-      // Save other fields like passwords after validation
-    });
-
-    setState(() {
-      isLoading = false;
+    Future.delayed(const Duration(seconds: 2)).then((value) {
+      setState(() {
+        isLoading = false;
+        Navigator.pushReplacement(
+          context,
+          CupertinoPageRoute(
+            builder: (_) => const BottomNavBar(),
+          ),
+        );
+      });
     });
   }
 }

@@ -102,44 +102,48 @@ class _PartnerDealDetailsScreenState extends State<PartnerDealDetailsScreen> {
                       SizedBox(
                         height: 10,
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {},
-                            style: ButtonStyle(
-                              backgroundColor: MaterialStateProperty.all<Color>(
-                                  Colors.white),
-                              elevation: MaterialStateProperty.all<double>(
-                                  1), // Remove elevation
-                              shape: MaterialStateProperty.all<
-                                  RoundedRectangleBorder>(
-                                RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(
-                                      5), // Set border radius
-                                  side: BorderSide(
-                                      color: MyColors
-                                          .btnBorderColor), // Set border color
+                      Center(
+                        // This centers the entire Column widget on the screen
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment
+                              .center, // Center children vertically within the Column
+                          crossAxisAlignment: CrossAxisAlignment
+                              .center, // Center children horizontally within the Column
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {},
+                              style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all<Color>(
+                                        Colors.white),
+                                elevation: MaterialStateProperty.all<double>(1),
+                                shape: MaterialStateProperty.all<
+                                    RoundedRectangleBorder>(
+                                  RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(5),
+                                    side: BorderSide(
+                                        color: MyColors.btnBorderColor),
+                                  ),
+                                ),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 20,
+                                  horizontal: 30,
+                                ),
+                                child: Text(
+                                  widget.pub.title ?? 'No Title',
+                                  style: TextStyle(
+                                    color: Colors.black,
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                                 ),
                               ),
                             ),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 20,
-                                horizontal: 30,
-                              ),
-                              child: Text(
-                                widget.pub.title ?? 'No Title',
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 2), // Add space between the two rows
-                        ],
+                            SizedBox(height: 12),
+                          ],
+                        ),
                       ),
 
                       SizedBox(height: 25), // Add spacing between rows

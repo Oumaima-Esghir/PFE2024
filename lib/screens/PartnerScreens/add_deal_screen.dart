@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:dealdiscover/client/client_service.dart'; // Import your client service
 import 'package:dealdiscover/model/pub.dart';
@@ -9,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
 
@@ -61,7 +63,8 @@ class _AddDealScreenState extends State<AddDealScreen> {
   DealCategory? _selectedCategory;
   String? stateValue;
   bool isLoading = false;
-
+  File? _image;
+  bool imagegeted = false;
   Future<String> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token') ?? "";
@@ -103,39 +106,46 @@ class _AddDealScreenState extends State<AddDealScreen> {
     // Create a Pub object
 
     try {
-      final url = Uri.parse('http://192.168.1.7:3000/pubs/');
-
       final token = await getToken();
+      var request = http.MultipartRequest(
+          'POST', Uri.parse('http://192.168.1.7:3000/pubs/'));
+      request.headers.addAll({
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'multipart/form-data'
+      });
+      request.fields['title'] = title;
+      request.fields['adress'] = adress;
+      request.fields['description'] = description;
+      request.fields['duree'] = duree!;
+      request.fields['pourcentage'] =
+          (stateValue == "promo" ? pourcentage : '') as String;
+      request.fields['state'] = stateValue != "promo" ? 'offre' : 'promo';
+      request.fields['category'] = _selectedCategory!.name;
 
-      final response = await http.post(
-        url,
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-        body: jsonEncode({
-          'title': title,
-          'adress': adress,
-          'description': description,
-          'category': _selectedCategory!.name,
-          'state': stateValue == "not in promo" ? "offre" : stateValue,
-          'pourcentage': stateValue == "promo"
-              ? pourcentage
-              : null, // Add promo fields to the body if needed
-          'duree': stateValue == "promo" ? duree : null,
-        }),
-      );
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => HiddenDrawer(),
-        ),
-      );
+      if (imagegeted == true) {
+        request.files.add(
+          await http.MultipartFile.fromPath('pubImage', _image!.path),
+        );
+      }
+
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        print('Deal add successfully');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HiddenDrawer(),
+          ),
+        );
+      } else {
+        print('Error updating deal');
+        print('Response code: ${response.statusCode}');
+        // Debugging response body
+        var responseBody = await response.stream.bytesToString();
+        print('Response body: $responseBody');
+      }
     } catch (e) {
-      // Handle any errors that might occur
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to add the deal')),
-      );
+      print('Error: $e');
     } finally {
       setState(() {
         isLoading = false;
@@ -184,20 +194,45 @@ class _AddDealScreenState extends State<AddDealScreen> {
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Image.asset(
-                      'assets/images/addP.png',
-                      width: 100,
-                      height: 100,
+                    CircleAvatar(
+                      radius:
+                          100, // Adjust the radius to control the size of the circle
+                      backgroundImage: imagegeted == true
+                          ? FileImage(_image!)
+                          : AssetImage(
+                              'assets/images/addP.png',
+                            ) as ImageProvider,
                     ),
                     SizedBox(height: 10),
-                    Text(
-                      "Add An Image",
-                      style: TextStyle(
-                        color: MyColors.btnBorderColor,
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
+                    TextButton(
+                      onPressed: () async {
+                        final ImagePicker _picker = ImagePicker();
+
+                        final XFile? image = await _picker.pickImage(
+                            source: ImageSource.gallery);
+                        _image = File(image!.path);
+
+                        if (image != null) {
+                          setState(() {
+                            imagegeted = true;
+                          });
+                          print("L'image: ${_image!.path}");
+                        }
+                      },
+                      style: TextButton.styleFrom(
+                        side: BorderSide(
+                            color:
+                                MyColors.btnBorderColor), // Add a border color
                       ),
-                    ),
+                      child: Text(
+                        "Add Your Image",
+                        style: TextStyle(
+                          color: MyColors.btnBorderColor,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
                   ],
                 ),
                 Container(

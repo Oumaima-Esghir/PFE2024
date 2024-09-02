@@ -1,4 +1,5 @@
 import 'dart:convert'; // Import for JSON encoding
+
 import 'dart:io';
 import 'package:dealdiscover/model/pub.dart';
 import 'package:dealdiscover/screens/PartnerScreens/deals_management_screen.dart';
@@ -7,6 +8,7 @@ import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:http/http.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart'; // Import for HTTP requests
 
@@ -27,6 +29,7 @@ class _EditDealScreenState extends State<EditDealScreen> {
   late TextEditingController dureeController;
   late TextEditingController pourcentageController;
   File? _image;
+  bool imagegeted = false;
   @override
   void initState() {
     super.initState();
@@ -58,7 +61,6 @@ class _EditDealScreenState extends State<EditDealScreen> {
     String imageUrl = '';
     TimeOfDay selectedTime = TimeOfDay.now();
 
-    bool imagegeted = false;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -110,11 +112,14 @@ class _EditDealScreenState extends State<EditDealScreen> {
                     SizedBox(height: 10),
                     TextButton(
                       onPressed: () async {
-                        final image = await ImagePicker()
-                            .pickImage(source: ImageSource.gallery);
+                        final ImagePicker _picker = ImagePicker();
+
+                        final XFile? image = await _picker.pickImage(
+                            source: ImageSource.gallery);
+                        _image = File(image!.path);
+
                         if (image != null) {
                           setState(() {
-                            _image = File(image.path);
                             imagegeted = true;
                           });
                           print("L'image: ${_image!.path}");
@@ -302,7 +307,7 @@ class _EditDealScreenState extends State<EditDealScreen> {
                       SizedBox(height: 20),
                       if (widget.pub.state != 'offre') ...[
                         Text(
-                          "Duree",
+                          "Duration",
                           style: TextStyle(
                             color: MyColors.btnBorderColor,
                             fontSize: 16,
@@ -316,7 +321,7 @@ class _EditDealScreenState extends State<EditDealScreen> {
                           child: TextField(
                             controller: dureeController,
                             decoration: InputDecoration(
-                              hintText: "Write Extra Field 1",
+                              hintText: "Write duration",
                               filled: true,
                               fillColor: MyColors.backbtn1,
                               enabledBorder: OutlineInputBorder(
@@ -352,7 +357,7 @@ class _EditDealScreenState extends State<EditDealScreen> {
                           child: TextField(
                             controller: pourcentageController,
                             decoration: InputDecoration(
-                              hintText: "Write Extra Field 2",
+                              hintText: "Write pourcentage",
                               filled: true,
                               fillColor: MyColors.backbtn1,
                               enabledBorder: OutlineInputBorder(
@@ -391,15 +396,7 @@ class _EditDealScreenState extends State<EditDealScreen> {
                           width: 350,
                           child: TextButton(
                             onPressed: () async {
-                              if (await updateDeal()) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) =>
-                                        DealsManagementScreen(),
-                                  ),
-                                );
-                              }
+                              updateDeal();
                             },
                             style: ButtonStyle(
                               backgroundColor: MaterialStateProperty.all<Color>(
@@ -452,56 +449,54 @@ class _EditDealScreenState extends State<EditDealScreen> {
     };
   }
 
-  Future<bool> updateDeal() async {
+  void updateDeal() async {
     setState(() {
       isLoading = true;
     });
 
     // API endpoint and request
-    final url = Uri.parse('http://10.0.2.2:3000/pubs/${widget.pub.id}');
-    print("iddd:" + widget.pub.toString());
+
     final token = await getToken();
 
     // Encode image to base64 if it's been changed
-    String? base64Image;
-    if (_image != null) {
-      final bytes = await _image!.readAsBytes();
-      base64Image = base64Encode(bytes);
-    }
-
-    print("base64Image");
-    print(base64Image);
-    print("base64Image");
-    final response = await http.put(
-      url,
-      headers: {
-        'Content-Type': 'application/json',
+    try {
+      var request = http.MultipartRequest(
+          'PUT', Uri.parse('http://192.168.1.7:3000/pubs/${widget.pub.id}'));
+      request.headers.addAll({
         'Authorization': 'Bearer $token',
-      },
-      body: jsonEncode({
-        'title': titleController.text,
-        'adress': addressController.text,
-        'description': descriptionController.text,
-        // 'duree': dureeController.text,
-        // 'pourcentage': pourcentageController.text,
-        'state': stateValue == "not in promo" ? "offre" : stateValue,
-        'pubImage': base64Image,
-      }),
-    );
+        'Content-Type': 'multipart/form-data'
+      });
+      request.fields['title'] = titleController.text;
+      request.fields['adress'] = addressController.text;
+      request.fields['description'] = descriptionController.text;
+      request.fields['duree'] = dureeController.text;
+      request.fields['pourcentage'] = pourcentageController.text;
+      request.fields['state'] = stateValue!;
 
-    setState(() {
-      isLoading = false;
-    });
+      if (imagegeted == true) {
+        request.files.add(
+          await http.MultipartFile.fromPath('pubImage', _image!.path),
+        );
+      }
 
-    if (response.statusCode == 200) {
-      return true; // Successful update
-    } else {
-      print(response.statusCode);
-      // Handle error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to update deal')),
-      );
-      return false; // Failed update
+      var response = await request.send();
+      if (response.statusCode == 200) {
+        print('Deal updated successfully');
+        Navigator.pushReplacement(context,
+            MaterialPageRoute(builder: (context) => DealsManagementScreen()));
+      } else {
+        print('Error updating deal');
+        print('Response code: ${response.statusCode}');
+        // Debugging response body
+        var responseBody = await response.stream.bytesToString();
+        print('Response body: $responseBody');
+      }
+    } catch (e) {
+      print('Error: $e');
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 

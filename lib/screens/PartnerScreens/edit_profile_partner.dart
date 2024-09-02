@@ -1,10 +1,12 @@
 import 'dart:convert'; // For jsonEncode
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:dealdiscover/screens/PartnerScreens/profilepartner_screen.dart';
 import 'package:dealdiscover/screens/menus/hidden_drawer.dart';
 import 'package:dealdiscover/utils/colors.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class EditProfilePartnerScreen extends StatefulWidget {
@@ -31,18 +33,32 @@ class _EditProfilePartnerScreenState extends State<EditProfilePartnerScreen> {
   final TextEditingController _addressController = TextEditingController();
   bool isLoading = false;
 
+  File? _image;
+  bool imagegeted = false;
+
   @override
   void initState() {
     super.initState();
     if (widget.userData != null) {
       _usernameController.text = widget.userData?['name'] ?? "";
       _addressController.text = widget.userData?['adress'] ?? "";
+
+      bool imagegeted = false;
     }
   }
 
   Future<String> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString('token') ?? "";
+  }
+
+// Ensure the token is correctly retrieved
+  Future<Map<String, String>> getHeaders() async {
+    final token = await getToken();
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer $token',
+    };
   }
 
   Future<void> _updateProfile() async {
@@ -52,51 +68,54 @@ class _EditProfilePartnerScreenState extends State<EditProfilePartnerScreen> {
     String confirmPassword =
         _confirmpasswordController.text; // Assuming same controller
 
-    if (newPassword.isNotEmpty && confirmPassword.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('All fields are required')),
-      );
-      return;
-    }
-
-    if (newPassword.isNotEmpty && newPassword.length < 8) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text('New password must be at least 8 characters long')),
-      );
-      return;
-    }
-
-    if (newPassword != confirmPassword) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Passwords do not match')),
-      );
-      return;
-    }
-
     setState(() {
       isLoading = true;
     });
     final token = await getToken();
-    final url =
-        'http://192.168.1.7:3000/partenaires/update'; // Replace with your API endpoint
-    final headers = {
-      'Content-Type': 'application/json',
-      'Authorization': 'Bearer $token',
-    };
-    final body = jsonEncode({
-      'name': _usernameController.text,
-      'adress': _addressController.text,
-      // 'actualPassword': actualPassword,
-      'password': newPassword,
-    });
 
     try {
-      final response = await http.put(
-        Uri.parse(url),
-        headers: headers,
-        body: body,
-      );
+      var request = http.MultipartRequest(
+          'PUT', Uri.parse('http://192.168.1.7:3000/partenaires/update'));
+      request.headers.addAll({
+        'Authorization': 'Bearer $token',
+        'Content-Type': 'multipart/form-data'
+      });
+
+      final body = jsonEncode({
+        'name': _usernameController.text,
+        'adress': _addressController.text,
+        // 'actualPassword': actualPassword,
+        'password': newPassword,
+      });
+
+      if (newPassword.isNotEmpty && confirmPassword.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('All fields are required')),
+        );
+        return;
+      }
+
+      if (newPassword.isNotEmpty && newPassword.length < 8) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text('New password must be at least 8 characters long')),
+        );
+        return;
+      }
+
+      if (newPassword != confirmPassword) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Passwords do not match')),
+        );
+        return;
+      }
+
+      if (imagegeted == true) {
+        request.files.add(
+          await http.MultipartFile.fromPath('image', _image!.path),
+        );
+      }
+      var response = await request.send();
 
       if (response.statusCode == 200) {
         // Success
@@ -130,6 +149,9 @@ class _EditProfilePartnerScreenState extends State<EditProfilePartnerScreen> {
 
   @override
   Widget build(BuildContext context) {
+    String imageUrl = '';
+    TimeOfDay selectedTime = TimeOfDay.now();
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -168,7 +190,7 @@ class _EditProfilePartnerScreenState extends State<EditProfilePartnerScreen> {
               children: [
                 Container(
                   width: 350,
-                  height: 700,
+                  height: 750,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
@@ -179,15 +201,49 @@ class _EditProfilePartnerScreenState extends State<EditProfilePartnerScreen> {
                           width: 180,
                           height: 180,
                           fit: BoxFit.cover, // Adjust the fit as needed
-                          image: widget.userData != null &&
-                                  widget.userData?['image'] != null
-                              ? NetworkImage(
-                                  'http://192.168.1.7:3000/images/${widget.userData?['image']}')
-                              : const AssetImage('assets/images/bruscetta.jpg')
+                          image: imagegeted == true
+                              ? FileImage(_image!)
+                              //widget.userData != null &&
+                              //      widget.userData?['image'] != null
+                              : NetworkImage(
+                                      'http://192.168.1.7:3000/images/${widget.userData?['image']}')
                                   as ImageProvider,
                         ),
                       ),
-                      SizedBox(height: 40),
+
+                      SizedBox(height: 15),
+                      TextButton(
+                        onPressed: () async {
+                          final ImagePicker _picker = ImagePicker();
+
+                          final XFile? image = await _picker.pickImage(
+                              source: ImageSource.gallery);
+                          _image = File(image!.path);
+
+                          if (image != null) {
+                            setState(() {
+                              imagegeted = true;
+                            });
+                            print("L'image: ${_image!.path}");
+                          }
+                        },
+                        style: TextButton.styleFrom(
+                          side: BorderSide(
+                              color: MyColors
+                                  .btnBorderColor), // Add a border color
+                        ),
+                        child: Text(
+                          "Edit Your Image",
+                          style: TextStyle(
+                            color: MyColors.btnBorderColor,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
                       Text(
                         "Partner Name",
                         style: TextStyle(

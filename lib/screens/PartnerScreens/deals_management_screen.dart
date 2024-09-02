@@ -40,7 +40,7 @@ class _DealsManagementScreenState extends State<DealsManagementScreen> {
           ),
         ),
         child: Padding(
-          padding: const EdgeInsets.only(top: 100.0),
+          padding: const EdgeInsets.only(top: 110.0),
           child: Column(
             children: [
               Container(
