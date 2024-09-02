@@ -519,7 +519,7 @@ class _EditPlanningScreenState extends State<EditPlanningScreen> {
 
     // API endpoint and request
     final url =
-        Uri.parse('http://10.0.2.2:3000/plans/update/${widget.plan.id}');
+        Uri.parse('http://192.168.1.7:3000/plans/update/${widget.plan.id}');
 
     print("iddd:" + formatDate(fromDate));
     final token = await getToken();

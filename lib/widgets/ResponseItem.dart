@@ -25,14 +25,23 @@ class ResponseItem extends StatelessWidget {
         padding: EdgeInsets.all(10),
         margin: EdgeInsets.symmetric(vertical: 5, horizontal: 10),
         decoration: BoxDecoration(
-          color: isQuestion ? Colors.white : selected ? Colors.blue : Colors.grey.withOpacity(0.5),
+          color: isQuestion
+              ? Colors.white
+              : selected
+                  ? Colors.blue
+                  : Colors.grey.withOpacity(0.5),
           borderRadius: BorderRadius.circular(10),
-          border: Border.all(color: isQuestion ? Colors.blue : Colors.transparent),
+          border:
+              Border.all(color: isQuestion ? Colors.blue : Colors.transparent),
         ),
         child: Text(
           text,
           style: TextStyle(
-            color: isQuestion ? Colors.blue : selected ? Colors.white : Colors.black,
+            color: isQuestion
+                ? Colors.blue
+                : selected
+                    ? Colors.white
+                    : Colors.black,
             fontWeight: selected ? FontWeight.bold : FontWeight.normal,
           ),
         ),

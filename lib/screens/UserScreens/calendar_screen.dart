@@ -214,7 +214,7 @@ Future<Map<String, String>> getHeaders() async {
 }
 
 Future<List<Plan>> partnerpubs() async {
-  final url = Uri.parse('http://10.0.2.2:3000/plans/get');
+  final url = Uri.parse('http://192.168.1.7:3000/plans/get');
   final headers = await getHeaders(); // Obtenir les en-têtes avec le jeton
   print(headers.toString());
 

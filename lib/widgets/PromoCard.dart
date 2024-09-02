@@ -1,26 +1,114 @@
+import 'package:dealdiscover/client/client_service.dart';
 import 'package:dealdiscover/model/pub.dart';
 import 'package:dealdiscover/screens/dealDetails_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PromoCard extends StatefulWidget {
   final Pub pub;
 
-  const PromoCard({super.key, required this.pub});
+  const PromoCard({Key? key, required this.pub}) : super(key: key);
   @override
   _PromoCardCardState createState() => _PromoCardCardState();
 }
 
 class _PromoCardCardState extends State<PromoCard> {
+  bool isFavorited = false;
+  bool isLoading = false;
+
+  late ClientService clientService;
+
   @override
   void initState() {
     print("heeeeeeeeeee");
     print(widget.pub);
     super.initState();
+    clientService = ClientService();
+    _loadFavoritePlaces();
   }
 
   final String rating = '4.5';
-  bool isFavorited = false;
+
+  Future<String> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token') ?? "";
+  }
+
+  void _loadFavoritePlaces() async {
+    print("Loading favorite places...");
+    try {
+      final favouritePlaces = await clientService.getFavorites();
+
+      setState(() {
+        isFavorited = favouritePlaces.contains(widget.pub.id);
+      });
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error loading favorite places: $e')),
+      );
+    }
+  }
+
+  void _toggleFavorite() async {
+    setState(() {
+      isFavorited = !isFavorited; // Optimistically update the UI
+    });
+
+    if (isFavorited) {
+      try {
+        final response = await clientService.addFavourite(widget.pub.id!);
+
+        if (response.statusCode != 200) {
+          // If the server fails, revert the UI change
+          setState(() {
+            isFavorited = !isFavorited;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content:
+                    Text('Failed to update favorite status: ${response.body}')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Favorite status updated successfully')),
+          );
+        }
+      } catch (e) {
+        setState(() {
+          isFavorited = !isFavorited;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error updating favorite status: $e')),
+        );
+      }
+    } else {
+      try {
+        final response = await clientService.removeFavorite(widget.pub.id!);
+
+        if (response.statusCode != 200) {
+          setState(() {
+            isFavorited = !isFavorited;
+          });
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text('Failed to remove favorite: ${response.body}')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Favorite removed')),
+          );
+        }
+      } catch (e) {
+        setState(() {
+          isFavorited = !isFavorited;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error removing favorite status: $e')),
+        );
+      }
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -47,7 +135,7 @@ class _PromoCardCardState extends State<PromoCard> {
                   child: Image(
                     image: widget.pub.pubImage != null
                         ? NetworkImage(
-                            'http://10.0.2.2:3000/images/${widget.pub.pubImage}')
+                            'http://192.168.1.7:3000/images/${widget.pub.pubImage}')
                         : AssetImage('assets/images/vitrine1.png')
                             as ImageProvider,
                     width: 160,
@@ -94,7 +182,7 @@ class _PromoCardCardState extends State<PromoCard> {
                             },
                             child: Image.asset(
                               isFavorited
-                                  ? 'assets/images/fav1.png' // Change the image path based on the state
+                                  ? 'assets/images/fav1.png'
                                   : 'assets/images/fav0.png',
                               width: 35,
                               height: 35,

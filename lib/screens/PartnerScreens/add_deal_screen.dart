@@ -103,7 +103,7 @@ class _AddDealScreenState extends State<AddDealScreen> {
     // Create a Pub object
 
     try {
-      final url = Uri.parse('http://10.0.2.2:3000/pubs/');
+      final url = Uri.parse('http://192.168.1.7:3000/pubs/');
 
       final token = await getToken();
 

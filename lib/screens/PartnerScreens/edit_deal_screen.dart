@@ -104,7 +104,7 @@ class _EditDealScreenState extends State<EditDealScreen> {
                       backgroundImage: imagegeted == true
                           ? FileImage(_image!)
                           : NetworkImage(
-                                  'http://10.0.2.2:3000/images/${widget.pub.pubImage}')
+                                  'http://192.168.1.7:3000/images/${widget.pub.pubImage}')
                               as ImageProvider,
                     ),
                     SizedBox(height: 10),

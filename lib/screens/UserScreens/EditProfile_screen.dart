@@ -70,7 +70,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
     final token = await getToken();
     final url =
-        'http://10.0.2.2:3000/users/update'; // Replace with your API endpoint
+        'http://192.168.1.7:3000/users/update'; // Replace with your API endpoint
     final headers = {
       'Content-Type': 'application/json',
       'Authorization': 'Bearer $token',
@@ -193,7 +193,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           image: widget.userData != null &&
                                   widget.userData?['image'] != null
                               ? NetworkImage(
-                                  'http://10.0.2.2:3000/images/${widget.userData?['image']}')
+                                  'http://192.168.1.7:3000/images/${widget.userData?['image']}')
                               : const AssetImage('assets/images/bruscetta.jpg')
                                   as ImageProvider,
                         ),

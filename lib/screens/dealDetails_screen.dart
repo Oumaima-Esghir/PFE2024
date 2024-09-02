@@ -133,7 +133,8 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
     }
 
     try {
-      final url = Uri.parse('http://10.0.2.2:3000/comments/${widget.pub.id}');
+      final url =
+          Uri.parse('http://192.168.1.7:3000/comments/${widget.pub.id}');
       final token = await getToken();
 
       final response = await http.post(
@@ -245,7 +246,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
   Future<List<Comment>> getComments() async {
     print('**********');
     final url = Uri.parse(
-        'http://10.0.2.2:3000/comments/${widget.pub.id}'); // Replace with your actual endpoint
+        'http://192.168.1.7:3000/comments/${widget.pub.id}'); // Replace with your actual endpoint
 
     final response = await http.get(url);
     print('comments');
@@ -311,7 +312,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
               children: [
                 Container(
                   width: MediaQuery.of(context).size.width,
-                  height: 1000,
+                  height: 1500,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -320,7 +321,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                         child: Image(
                           image: widget.pub.pubImage != null
                               ? NetworkImage(
-                                  'http://10.0.2.2:3000/images/${widget.pub.pubImage}')
+                                  'http://192.168.1.7:3000/images/${widget.pub.pubImage}')
                               : AssetImage('assets/images/vitrine1.png')
                                   as ImageProvider,
                           width: MediaQuery.of(context).size.width,
@@ -450,12 +451,41 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                           SizedBox(width: 15),
                         ],
                       ),
+                      SizedBox(
+                        height: 15,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0), // Add padding to left and right
+                        child: Text(
+                          'Description',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0), // Add padding to left and right
+                        child: Text(
+                          widget.pub.description ?? 'No description',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
                       Padding(
                         padding: EdgeInsets.symmetric(horizontal: 20),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            SizedBox(height: 20),
+                            SizedBox(height: 25),
                             Align(
                               alignment: Alignment.centerRight,
                               child: TextButton(

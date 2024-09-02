@@ -92,7 +92,7 @@ class _SeeAllDealsScreenState extends State<SeeAllPromotionsScreen> {
                     } else if (snapshot.hasData) {
                       return Container(
                         height:
-                            850, // Set a fixed height for the horizontal scroll view
+                            600, // Set a fixed height for the horizontal scroll view
                         child: SingleChildScrollView(
                           scrollDirection: Axis.vertical,
                           child: Column(

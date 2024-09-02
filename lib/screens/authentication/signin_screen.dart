@@ -207,8 +207,8 @@ class _SigninScreenState extends State<SigninScreen> {
                                 },
                                 icon: Icon(
                                   _obscureText
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
                                 ),
                               ),
                               errorText: _passwordError,

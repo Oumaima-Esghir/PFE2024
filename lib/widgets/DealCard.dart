@@ -3,11 +3,14 @@ import 'package:dealdiscover/screens/dealDetails_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:dealdiscover/client/client_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../client/client.dart';
 
 class DealCard extends StatefulWidget {
   final Pub pub;
 
-  const DealCard({super.key, required this.pub});
+  const DealCard({Key? key, required this.pub}) : super(key: key);
 
   @override
   _DealCardState createState() => _DealCardState();
@@ -17,35 +20,46 @@ class _DealCardState extends State<DealCard> {
   bool isFavorited = false;
   bool isLoading = false;
 
-  ClientService clientService = ClientService();
+  late ClientService clientService;
 
   @override
   void initState() {
     super.initState();
-    //_loadFavoriteStatus();
+    clientService = ClientService();
+    _loadFavoritePlaces();
   }
 
-  /*Future<void> _loadFavoriteStatus() async {
+  Future<String> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token') ?? "";
+  }
+
+  void _loadFavoritePlaces() async {
+    print("Loading favorite places...");
     try {
       final favouritePlaces = await clientService.getFavorites();
+
       setState(() {
-        isFavorited = favouritePlaces.contains(widget.place.id);
+        isFavorited = favouritePlaces.contains(widget.pub.id);
       });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error loading favorite places: $e')),
       );
     }
-  }*/
+  }
 
-  /*void _toggleFavorite() async {
+  void _toggleFavorite() async {
     setState(() {
       isFavorited = !isFavorited; // Optimistically update the UI
     });
+
     if (isFavorited) {
       try {
-        final response = await clientService.addFavourite(widget.place.id);
+        final response = await clientService.addFavourite(widget.pub.id!);
+
         if (response.statusCode != 200) {
+          // If the server fails, revert the UI change
           setState(() {
             isFavorited = !isFavorited;
           });
@@ -69,15 +83,15 @@ class _DealCardState extends State<DealCard> {
       }
     } else {
       try {
-        final response = await clientService.removeFavorite(widget.place.id);
+        final response = await clientService.removeFavorite(widget.pub.id!);
+
         if (response.statusCode != 200) {
           setState(() {
             isFavorited = !isFavorited;
           });
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content:
-                    Text('Failed to update favorite status: ${response.body}')),
+                content: Text('Failed to remove favorite: ${response.body}')),
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -89,11 +103,11 @@ class _DealCardState extends State<DealCard> {
           isFavorited = !isFavorited;
         });
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error updating favorite status: $e')),
+          SnackBar(content: Text('Error removing favorite status: $e')),
         );
       }
     }
-  }*/
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -133,7 +147,7 @@ class _DealCardState extends State<DealCard> {
                         child: Image(
                           image: widget.pub.pubImage != null
                               ? NetworkImage(
-                                  'http://10.0.2.2:3000/images/${widget.pub.pubImage}')
+                                  'http://192.168.1.7:3000/images/${widget.pub.pubImage}')
                               : AssetImage('assets/images/vitrine1.png')
                                   as ImageProvider,
                           width: 220,
@@ -149,8 +163,8 @@ class _DealCardState extends State<DealCard> {
                         // onTap: _toggleFavorite, // Handle favorite toggle
                         child: Image.asset(
                           isFavorited
-                              ? 'assets/images/fav1.png' // Full heart image
-                              : 'assets/images/fav0.png', // Empty heart image
+                              ? 'assets/images/fav1.png'
+                              : 'assets/images/fav0.png',
                           width: 35,
                           height: 35,
                         ),

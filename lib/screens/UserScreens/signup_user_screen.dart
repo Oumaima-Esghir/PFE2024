@@ -387,8 +387,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     },
                                     icon: Icon(
                                       _obscureText
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
                                     ),
                                   ),
                                 ),
@@ -417,8 +417,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                     },
                                     icon: Icon(
                                       _obscureText
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
                                     ),
                                   ),
                                 ),

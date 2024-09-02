@@ -308,8 +308,8 @@ class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
                                     },
                                     icon: Icon(
                                       _obscureText
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
                                     ),
                                   ),
                                 ),
@@ -338,8 +338,8 @@ class _SignUpPartnerScreenState extends State<SignUpPartnerScreen> {
                                     },
                                     icon: Icon(
                                       _obscureText
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
+                                          ? Icons.visibility_off
+                                          : Icons.visibility,
                                     ),
                                   ),
                                 ),

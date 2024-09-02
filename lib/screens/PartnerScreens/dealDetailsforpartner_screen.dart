@@ -90,7 +90,7 @@ class _PartnerDealDetailsScreenState extends State<PartnerDealDetailsScreen> {
                         child: Image(
                           image: widget.pub.pubImage != null
                               ? NetworkImage(
-                                  'http://10.0.2.2:3000/images/${widget.pub.pubImage}')
+                                  'http://192.168.1.7:3000/images/${widget.pub.pubImage}')
                               : AssetImage('assets/images/vitrine1.png')
                                   as ImageProvider,
                           width: MediaQuery.of(context).size.width,
@@ -125,8 +125,8 @@ class _PartnerDealDetailsScreenState extends State<PartnerDealDetailsScreen> {
                             ),
                             child: Padding(
                               padding: const EdgeInsets.symmetric(
-                                vertical: 10,
-                                horizontal: 20,
+                                vertical: 20,
+                                horizontal: 30,
                               ),
                               child: Text(
                                 widget.pub.title ?? 'No Title',
@@ -142,7 +142,7 @@ class _PartnerDealDetailsScreenState extends State<PartnerDealDetailsScreen> {
                         ],
                       ),
 
-                      SizedBox(height: 5), // Add spacing between rows
+                      SizedBox(height: 25), // Add spacing between rows
                       Row(
                         children: [
                           Padding(
@@ -203,8 +203,37 @@ class _PartnerDealDetailsScreenState extends State<PartnerDealDetailsScreen> {
                               color: Colors.grey,
                             ),
                           ),
-                          SizedBox(width: 15),
+                          SizedBox(width: 30),
                         ],
+                      ),
+                      SizedBox(
+                        height: 30,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0), // Add padding to left and right
+                        child: Text(
+                          'Description',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16.0), // Add padding to left and right
+                        child: Text(
+                          widget.pub.description ?? 'No description',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                          ),
+                        ),
                       ),
 
                       Padding(
