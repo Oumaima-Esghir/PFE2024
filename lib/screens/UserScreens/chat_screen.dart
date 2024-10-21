@@ -1,9 +1,12 @@
+import 'dart:convert';
 import 'package:dealdiscover/screens/UserScreens/bot_screen.dart';
 import 'package:dealdiscover/utils/colors.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_chat_ui/flutter_chat_ui.dart';
 import 'package:flutter_chat_types/flutter_chat_types.dart' as types;
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ChatScreen extends StatefulWidget {
   const ChatScreen({super.key});
@@ -65,7 +68,11 @@ class _ChatScreenState extends State<ChatScreen> {
             Expanded(
               child: Chat(
                 messages: _messages,
-                onSendPressed: (types.PartialText message) {},
+                onSendPressed: (types.PartialText message) {
+                  if (message.text.isNotEmpty) {
+                    _handleSendPressed(message.text);
+                  }
+                },
                 user: _user,
                 showUserAvatars: true,
                 showUserNames: true,
@@ -226,19 +233,56 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     _addMessage(textMessage);
-
-    // Simulate a response from the chatbot after a short delay
-    Future.delayed(const Duration(seconds: 1), () {
-      _simulateChatbotResponse();
-    });
+    _sendMessageToBackend(text);
   }
 
-  void _simulateChatbotResponse() {
+  Future<String> getToken() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token') ?? "";
+  }
+
+  Future<void> _sendMessageToBackend(String text) async {
+    final url = 'http://192.168.1.6:3000/conversations/handleMessage/';
+    final token = await getToken(); // Update with your API endpoint
+
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization':
+              'Bearer $token', // Update with a valid token if needed
+        },
+        body: json.encode({
+          'message': text,
+        }),
+      );
+
+      print('Response status: ${response.statusCode}');
+      print('Response body: ${response.body}'); // Print the raw response
+
+      final responseData = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        final chatbotResponse =
+            responseData['response'] ?? ''; // Handle null values
+        final conversationId = responseData['conversationId'];
+
+        _handleChatbotResponse(chatbotResponse);
+      } else {
+        print('Error: ${responseData['message'] ?? 'Unknown error'}');
+      }
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  void _handleChatbotResponse(String response) {
     final botMessage = types.TextMessage(
       author: _chatbot,
       createdAt: DateTime.now().millisecondsSinceEpoch,
       id: DateTime.now().toIso8601String(),
-      text: 'Hello! I am Dedi, how can I assist you today?', // Example response
+      text: response ?? '', // Default to empty string if null
     );
 
     _addMessage(botMessage);
@@ -254,7 +298,9 @@ class _ChatScreenState extends State<ChatScreen> {
     setState(() {
       isLoading = true;
     });
-    Future.delayed(const Duration(seconds: 2)).then((value) {
+
+    // Navigate to BotScreen after loading
+    Future.delayed(const Duration(seconds: 2), () {
       setState(() {
         isLoading = false;
         Navigator.pushReplacement(

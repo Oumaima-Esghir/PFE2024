@@ -48,7 +48,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           // Make the HTTP request to fetch user details
           final response = await http.get(
             Uri.parse(
-                'http://192.168.1.7:3000/admin/users/$userId'), // Replace with your API endpoint
+                'http://192.168.1.6:3000/admin/users/$userId'), // Replace with your API endpoint
           );
 
           if (response.statusCode == 200) {
@@ -155,7 +155,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           fit: BoxFit.cover, // Adjust the fit as needed
                           image: userData != null && userData?['image'] != null
                               ? NetworkImage(
-                                  'http://192.168.1.7:3000/images/${userData?['image']}')
+                                  'http://192.168.1.6:3000/images/${userData?['image']}')
                               : const AssetImage('assets/images/bruscetta.jpg')
                                   as ImageProvider,
                         ),

@@ -166,7 +166,7 @@ class _PlanningItemState extends State<PlanningItem> {
   Future<bool> delete() async {
     // API endpoint and request
     final url =
-        Uri.parse('http://192.168.1.7:3000/plans/delete/${widget.plan.id}');
+        Uri.parse('http://192.168.1.6:3000/plans/delete/${widget.plan.id}');
 
     final token = await getToken();
 

@@ -34,7 +34,7 @@ class _DealPartnerItemState extends State<DealPartnerItem> {
     try {
       print("id" + id);
       final url =
-          Uri.parse('http://192.168.1.7:3000/pubs/delete/${widget.pub.id}');
+          Uri.parse('http://192.168.1.6:3000/pubs/delete/${widget.pub.id}');
       print("iddd:" + widget.pub.toString());
       final token = await getToken();
 

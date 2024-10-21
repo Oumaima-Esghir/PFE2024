@@ -6,8 +6,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'end_points.dart';
 
 class Client {
-  final String serverUrl = "http://192.168.1.7:3000";
-   final String baseUrl = "http://192.168.1.7:3000";//allaghaleb si ala
+  final String serverUrl = "http://192.168.1.6:3000";
+   final String baseUrl = "http://192.168.1.6:3000";//allaghaleb si ala
 
   // final String serverUrl = "http://10.0.2.2:3000";
   // final String baseUrl = "http://10.0.2.2:3000";

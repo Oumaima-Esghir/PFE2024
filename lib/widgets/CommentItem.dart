@@ -39,7 +39,7 @@ class _CommentItemState extends State<CommentItem> {
           child: CircleAvatar(
             backgroundImage: widget.comments.pic.isNotEmpty
                 ? NetworkImage(
-                    'http://192.168.1.7:3000/images/${widget.comments.pic}') // Use NetworkImage for URLs
+                    'http://192.168.1.6:3000/images/${widget.comments.pic}') // Use NetworkImage for URLs
                 : AssetImage('assets/images/user_pic.png') as ImageProvider,
           ),
         ),

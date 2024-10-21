@@ -75,7 +75,7 @@ class _EditProfilePartnerScreenState extends State<EditProfilePartnerScreen> {
 
     try {
       var request = http.MultipartRequest(
-          'PUT', Uri.parse('http://192.168.1.7:3000/partenaires/update'));
+          'PUT', Uri.parse('http://192.168.1.6:3000/partenaires/update'));
       request.headers.addAll({
         'Authorization': 'Bearer $token',
         'Content-Type': 'multipart/form-data'
@@ -125,7 +125,7 @@ class _EditProfilePartnerScreenState extends State<EditProfilePartnerScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => ProfileAsPartnerScreen(),
+            builder: (context) => HiddenDrawer(),
           ),
         );
       } else {
@@ -206,7 +206,7 @@ class _EditProfilePartnerScreenState extends State<EditProfilePartnerScreen> {
                               //widget.userData != null &&
                               //      widget.userData?['image'] != null
                               : NetworkImage(
-                                      'http://192.168.1.7:3000/images/${widget.userData?['image']}')
+                                      'http://192.168.1.6:3000/images/${widget.userData?['image']}')
                                   as ImageProvider,
                         ),
                       ),

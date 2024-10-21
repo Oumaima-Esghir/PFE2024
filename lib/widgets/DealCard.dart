@@ -147,7 +147,7 @@ class _DealCardState extends State<DealCard> {
                         child: Image(
                           image: widget.pub.pubImage != null
                               ? NetworkImage(
-                                  'http://192.168.1.7:3000/images/${widget.pub.pubImage}')
+                                  'http://192.168.1.6:3000/images/${widget.pub.pubImage}')
                               : AssetImage('assets/images/vitrine1.png')
                                   as ImageProvider,
                           width: 220,

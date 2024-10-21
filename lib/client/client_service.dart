@@ -112,7 +112,7 @@ class ClientService extends Client {
 
 //UserSignin
   Future<http.Response> signinuser(String email, String password) async {
-    final url = Uri.parse('http://192.168.1.7:3000/users/signin');
+    final url = Uri.parse('http://192.168.1.6:3000/users/signin');
     final headers = {'Content-Type': 'application/json'};
     final body = json.encode({
       'email': email,

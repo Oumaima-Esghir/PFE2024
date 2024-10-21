@@ -134,7 +134,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
 
     try {
       final url =
-          Uri.parse('http://192.168.1.7:3000/comments/${widget.pub.id}');
+          Uri.parse('http://192.168.1.6:3000/comments/${widget.pub.id}');
       final token = await getToken();
 
       final response = await http.post(
@@ -246,7 +246,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
   Future<List<Comment>> getComments() async {
     print('**********');
     final url = Uri.parse(
-        'http://192.168.1.7:3000/comments/${widget.pub.id}'); // Replace with your actual endpoint
+        'http://192.168.1.6:3000/comments/${widget.pub.id}'); // Replace with your actual endpoint
 
     final response = await http.get(url);
     print('comments');
@@ -321,7 +321,7 @@ class _DealDetailsScreenState extends State<DealDetailsScreen> {
                         child: Image(
                           image: widget.pub.pubImage != null
                               ? NetworkImage(
-                                  'http://192.168.1.7:3000/images/${widget.pub.pubImage}')
+                                  'http://192.168.1.6:3000/images/${widget.pub.pubImage}')
                               : AssetImage('assets/images/vitrine1.png')
                                   as ImageProvider,
                           width: MediaQuery.of(context).size.width,

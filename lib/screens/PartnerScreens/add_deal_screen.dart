@@ -72,29 +72,30 @@ class _AddDealScreenState extends State<AddDealScreen> {
 
   void _addDeal() async {
     final String title = _titleController.text.trim();
-    final String adress = _adressController.text.trim();
+    final String address = _adressController.text.trim();
     final String description = _descriptionController.text.trim();
-    int? pourcentage;
+    int? percentage;
+
     try {
-      pourcentage = int.tryParse(_promoField1Controller.text.trim());
+      percentage = int.tryParse(_promoField1Controller.text.trim());
     } catch (e) {
-      // Handle any parsing errors if needed
       print('Error parsing promo field 1 to integer: $e');
     }
 
-    final String? duree = _promoField2Controller.text.trim();
+    final String? duration = _promoField2Controller.text.trim();
 
     if (title.isEmpty ||
-        adress.isEmpty ||
+        address.isEmpty ||
         description.isEmpty ||
         stateValue == null ||
         _selectedCategory == null ||
-        (stateValue == "promo" && (duree?.isEmpty ?? true))) {
-      // Show an error message or a dialog to the user
+        (stateValue == "promo" && (duration?.isEmpty ?? true))) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-            content: Text(
-                'Please fill all fields and select a deal state and category')),
+          content: Text(
+            'Please fill all fields and select a deal state and category',
+          ),
+        ),
       );
       return;
     }
@@ -103,53 +104,64 @@ class _AddDealScreenState extends State<AddDealScreen> {
       isLoading = true;
     });
 
-    // Create a Pub object
-
     try {
       final token = await getToken();
       var request = http.MultipartRequest(
-          'POST', Uri.parse('http://192.168.1.7:3000/pubs/'));
+        'POST',
+        Uri.parse('http://192.168.1.6:3000/pubs/'),
+      );
+
       request.headers.addAll({
         'Authorization': 'Bearer $token',
-        'Content-Type': 'multipart/form-data'
+        'Content-Type': 'multipart/form-data',
       });
+
       request.fields['title'] = title;
-      request.fields['adress'] = adress;
+      request.fields['address'] = address;
       request.fields['description'] = description;
-      request.fields['duree'] = duree!;
+      request.fields['duree'] = duration ?? '';
       request.fields['pourcentage'] =
-          (stateValue == "promo" ? pourcentage : '') as String;
+          stateValue == "promo" ? (percentage?.toString() ?? '') : '';
       request.fields['state'] = stateValue != "promo" ? 'offre' : 'promo';
       request.fields['category'] = _selectedCategory!.name;
 
-      if (imagegeted == true) {
+      if (imagegeted == true && _image != null) {
         request.files.add(
           await http.MultipartFile.fromPath('pubImage', _image!.path),
         );
       }
 
       var response = await request.send();
-      if (response.statusCode == 200) {
-        print('Deal add successfully');
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => HiddenDrawer(),
-          ),
-        );
+      var responseBody = await response.stream.bytesToString();
+
+      print('Response code: ${response.statusCode}');
+      print('Response body: $responseBody');
+
+      if (response.statusCode == 201) {
+        print('Deal added successfully');
+        if (context.mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => HiddenDrawer(),
+            ),
+          );
+          print('Navigating to HiddenDrawer...');
+        } else {
+          print('Context is not mounted, unable to navigate.');
+        }
       } else {
-        print('Error updating deal');
+        print('Error adding deal');
         print('Response code: ${response.statusCode}');
-        // Debugging response body
-        var responseBody = await response.stream.bytesToString();
-        print('Response body: $responseBody');
       }
     } catch (e) {
       print('Error: $e');
     } finally {
-      setState(() {
-        isLoading = false;
-      });
+      if (context.mounted) {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 

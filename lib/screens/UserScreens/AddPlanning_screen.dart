@@ -60,7 +60,7 @@ class _AddPlanningScreenState extends State<AddPlanningScreen> {
       return;
     }
     print(widget.id);
-    final url = Uri.parse('http://10.0.2.2:3000/plans/add/${widget.id}');
+    final url = Uri.parse('http://192.168.1.6:3000/plans/add/${widget.id}');
 
     final token = await getToken();
 

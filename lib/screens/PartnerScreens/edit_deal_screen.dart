@@ -106,7 +106,7 @@ class _EditDealScreenState extends State<EditDealScreen> {
                       backgroundImage: imagegeted == true
                           ? FileImage(_image!)
                           : NetworkImage(
-                                  'http://192.168.1.7:3000/images/${widget.pub.pubImage}')
+                                  'http://192.168.1.6:3000/images/${widget.pub.pubImage}')
                               as ImageProvider,
                     ),
                     SizedBox(height: 10),
@@ -461,7 +461,7 @@ class _EditDealScreenState extends State<EditDealScreen> {
     // Encode image to base64 if it's been changed
     try {
       var request = http.MultipartRequest(
-          'PUT', Uri.parse('http://192.168.1.7:3000/pubs/${widget.pub.id}'));
+          'PUT', Uri.parse('http://192.168.1.6:3000/pubs/${widget.pub.id}'));
       request.headers.addAll({
         'Authorization': 'Bearer $token',
         'Content-Type': 'multipart/form-data'
